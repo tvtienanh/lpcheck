@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tra Cứu Đơn Hàng</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #3E8E41; /* Màu tiêu đề */
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            border: 2px solid #3E8E41; /* Viền màu xanh */
+            border-radius: 5px;
+            font-size: 16px;
+            width: 300px;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin-left: 10px;
+            background-color: #3E8E41; /* Màu nền nút */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #2B6A30; /* Màu nền nút khi hover */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border: 2px solid #000; /* Viền đen */
+        }
+
+        th, td {
+            border: 1px solid #000; /* Viền đen cho ô */
+            padding: 8px;
+            text-align: left;
+            font-size: 14px;
+            height: 40px; /* Chiều cao cố định cho tất cả các ô */
+        }
+
+        th {
+            background-color: #A3D9E0; /* Màu header bảng */
+            text-align: center; /* Căn giữa header */
+        }
+
+        .status-finished {
+            color: #FFFFFF;
+            background-color: #4CAF50; /* Xanh lá */
+            border-radius: 25px;
+            padding: 5px 9px;
+        }
+
+        .status-waiting {
+            color: #FFFFFF;
+            background-color: #F44336; /* Đỏ */
+            border-radius: 25px;
+            padding: 5px 9px;
+        }
+
+        .status-internal {
+            color: #FFFFFF;
+            background-color: #9C27B0; /* Tím */
+            border-radius: 25px;
+            padding: 5px 9px;
+        }
+
+        .status-delivery {
+            color: #FFFFFF;
+            background-color: #2196F3; /* Xanh dương */
+            border-radius: 25px;
+            padding: 5px 9px;
+        }
+
+        .hidden {
+            display: none; /* Ẩn ghi chú */
+        }
+
+        .long-text {
+            max-width: 150px; /* Kích thước cố định cho cột */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .status-column {
+            width: 100px; /* Chiều rộng của cột trạng thái, điều chỉnh theo nhu cầu */
+            min-width: 100px; /* Chiều rộng tối thiểu để cột không bị co lại */
+            max-width: 150px; /* Chiều rộng tối đa để cột không bị kéo dài quá mức */
+            text-align: center;
+        }
+
+        .amount, .payment, .shipping-fee {
+            text-align: center; /* Căn giữa */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Tra Cứu Đơn Hàng</h1>
+
+    <div class="search-container">
+        <input type="text" id="privateCode" placeholder="Nhập mã đơn hàng để tra cứu">
+        <button id="searchBtn" onclick="fetchOrders()">Tra Cứu</button>
+    </div>
+
+    <table id="ordersTable">
+        <thead>
+            <tr>
+                <th>Thời gian</th>
+                <th class="status-column">Trạng thái</th>
+                <th>Mã đơn hàng</th>
+                <th class="long-text">Đơn đặt hàng</th>
+                <th>Khách hàng</th>
+                <th>Địa chỉ giao</th>
+                <th class="payment">Thanh toán</th>
+                <th class="amount">Giá trị đơn</th>
+                <th class="shipping-fee">Phí giao hàng</th>
+                <th>% Chi phí</th>
+                <th>Thời gian giao</th>
+                <th class="hidden">Ghi chú</th>
+            </tr>
+        </thead>
+        <tbody id="ordersBody">
+            <!-- Dữ liệu sẽ được thêm vào đây bằng JavaScript -->
+        </tbody>
+    </table>
+
+    <script>
+        async function fetchOrders() {
+            const privateCode = document.getElementById('privateCode').value;
+            let filterString = '';
+
+            if (privateCode) {
+                filterString = `(((contains(private_code,'${privateCode}')) or (contains(orders_cancel_reason,'${privateCode}')) or (contains(orders_code,'${privateCode}')) or (contains(orders_temp_cancel_full_reason,'${privateCode}')) or (contains(orders_temp_cancel_reason,'${privateCode}')) or (contains(pod_districts,'${privateCode}')) or (contains(orders_customer_name,'${privateCode}'))))`;
+            }
+
+            const response = await fetch("https://giaoduocpham.vn/graphql", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer BAJ2DY4ZoepiEXmAd,7670d8f330af99fa7f34e9d2158e0b7a2d50dba546f10074fdf5aa41f5cf75ecf2e0295951522e20395bca"
+                },
+                body: JSON.stringify({
+                    query: `{
+                        records: orders(skip: 0, top: 25, filters: "${filterString}") {
+                            _id,
+                            orders_code,
+                            private_code,
+                            orders_status,
+                            orders_amount,
+                            orders_fee_aft_vat,
+                            orders_pod_name,
+                            orders_customer_name,
+                            orders_created,
+                            mode_of_payment,
+                            time_delivery_reality,
+                            orders_temp_cancel_note
+                        },
+                        count: orders__count
+                    }`
+                })
+            });
+
+            const data = await response.json();
+            renderOrders(data.data.records);
+        }
+
+        function renderOrders(orders) {
+            const ordersBody = document.getElementById('ordersBody');
+            ordersBody.innerHTML = ''; // Xóa nội dung cũ
+
+            let hasNotes = false;  // Biến kiểm tra nếu có ghi chú
+
+            // Sắp xếp đơn hàng theo thời gian tạo, mới nhất lên đầu
+            orders.sort((a, b) => new Date(b.orders_created) - new Date(a.orders_created));
+
+            orders.forEach(order => {
+                const createdDate = new Date(order.orders_created).toLocaleDateString();
+                const status = {
+                    finished: `<span class="status-finished">Đã giao</span>`,
+                    waiting_temp_canceled: `<span class="status-waiting">Tạm huỷ</span>`,
+                    internal_transport: `<span class="status-internal">Chuyển kho</span>`,
+                    delivery: `<span class="status-delivery">Đang giao</span>`
+                }[order.orders_status] || order.orders_status;
+
+                const paymentMethod = {
+                    bank: 'Không thu hộ',
+                    cash: 'COD'
+                }[order.mode_of_payment] || order.mode_of_payment;
+
+                const noteCell = order.orders_temp_cancel_note ? order.orders_temp_cancel_note : '';
+                if (noteCell !== '') {
+                    hasNotes = true;  // Đặt cờ true nếu có ghi chú
+                }
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${createdDate}</td>
+                    <td class="centered">${status}</td>
+                    <td class="long-text">${order.orders_code}</td>
+                    <td class="long-text">${order.private_code}</td>
+                    <td>${order.orders_customer_name}</td>
+                    <td>${order.orders_pod_name}</td>
+                    <td class="payment centered">${paymentMethod}</td>
+                    <td class="amount centered">${order.orders_amount ? order.orders_amount.toLocaleString('vi-VN') : 0}</td>
+                    <td class="shipping-fee centered">${order.orders_fee_aft_vat ? order.orders_fee_aft_vat.toLocaleString('vi-VN') : 0}</td>
+                    <td>${order.orders_fee_aft_vat && order.orders_amount ? ((order.orders_fee_aft_vat / order.orders_amount) * 100).toFixed(2) + '%' : '0%'}</td>
+                    <td>${order.time_delivery_reality ? new Date(order.time_delivery_reality).toLocaleString() : ''}</td>
+                    <td style="border: 1px solid #000;" class="${noteCell === 'Không có ghi chú' ? '' : ''}">${noteCell}</td>
+                `;
+
+                ordersBody.appendChild(row);
+            });
+
+            const noteHeader = document.querySelector('th:nth-child(12)');
+            if (hasNotes) {
+                noteHeader.classList.remove('hidden');  // Hiển thị cột ghi chú nếu có ghi chú
+            } else {
+                noteHeader.classList.add('hidden');  // Ẩn cột ghi chú nếu không có ghi chú
+            }
+        }
+
+
+        window.onload = () => {
+            fetchOrders(); // Tự động gọi hàm fetchOrders khi trang được tải
+        };
+    </script>
+</body>
+</html>

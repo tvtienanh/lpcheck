@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tra Cứu Đơn Hàng LP</title>
+    <title>Tra Cứu Đơn Hàng</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -117,6 +117,22 @@
             max-width: 150px; /* Chiều rộng tối đa để cột không bị kéo dài quá mức */
             text-align: center;
         }
+		
+		.viber-button {
+		margin-left: 20px;
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #59267C; /* Màu đặc trưng của Viber */
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: bold;
+		}
+
+		.viber-button:hover {
+		background-color: #7D3BB7; /* Màu khi hover */
+		}
 
         .amount, .payment, .shipping-fee {
             text-align: center; /* Căn giữa */
@@ -128,9 +144,11 @@
     <h1>Tra Cứu Đơn Hàng</h1>
 
     <div class="search-container">
-        <input type="text" id="privateCode" placeholder="Nhập mã đơn hàng để tra cứu">
+        <input type="text" id="privateCode" placeholder="Nhập mã đơn hàng, tên khách hàng,... để tra cứu">
         <button id="searchBtn" onclick="fetchOrders()">Tra Cứu</button>
+		<a href="viber://chat?number=+84915665422" target="_blank" class="viber-button">Liên hệ kho</a>
     </div>
+	
 
     <table id="ordersTable">
         <thead>

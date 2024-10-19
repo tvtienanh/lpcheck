@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tra Cứu Đơn Hàng</title>
+    <title>Tra Cứu Đơn Hàng LP</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -72,7 +72,7 @@
             padding: 5px 9px;
         }
 
-        .status-waiting {
+        .status-waiting, .status-cancelled  {
             color: #FFFFFF;
             background-color: #F44336; /* Đỏ */
             border-radius: 25px;
@@ -92,6 +92,13 @@
             border-radius: 25px;
             padding: 5px 9px;
         }
+		
+		.status-wod {
+            color: #FFFFFF;
+            background-color: #9126f0; /* Xanh dương */
+            border-radius: 25px;
+            padding: 5px 9px;
+        }
 
         .hidden {
             display: none; /* Ẩn ghi chú */
@@ -106,7 +113,7 @@
 
         .status-column {
             width: 100px; /* Chiều rộng của cột trạng thái, điều chỉnh theo nhu cầu */
-            min-width: 100px; /* Chiều rộng tối thiểu để cột không bị co lại */
+            min-width: 130px; /* Chiều rộng tối thiểu để cột không bị co lại */
             max-width: 150px; /* Chiều rộng tối đa để cột không bị kéo dài quá mức */
             text-align: center;
         }
@@ -137,7 +144,6 @@
                 <th class="payment">Thanh toán</th>
                 <th class="amount">Giá trị đơn</th>
                 <th class="shipping-fee">Phí giao hàng</th>
-                <th>% Chi phí</th>
                 <th>Thời gian giao</th>
                 <th class="hidden">Ghi chú</th>
             </tr>
@@ -203,6 +209,8 @@
                     waiting_temp_canceled: `<span class="status-waiting">Tạm huỷ</span>`,
                     internal_transport: `<span class="status-internal">Chuyển kho</span>`,
                     delivery: `<span class="status-delivery">Đang giao</span>`,
+					wod_confirmed: `<span class="status-wod">Nhập kho giao</span>`,
+					temp_cancelled: `<span class="status-cancelled">Tạm huỷ</span>`
                 }[order.orders_status] || order.orders_status;
 
                 const paymentMethod = {
@@ -233,7 +241,7 @@
                 ordersBody.appendChild(row);
             });
 
-            const noteHeader = document.querySelector('th:nth-child(12)');
+            const noteHeader = document.querySelector('th:nth-child(11)');
             if (hasNotes) {
                 noteHeader.classList.remove('hidden');  // Hiển thị cột ghi chú nếu có ghi chú
             } else {
@@ -246,5 +254,60 @@
             fetchOrders(); // Tự động gọi hàm fetchOrders khi trang được tải
         };
     </script>
+	<!---script>
+			// Responsive adjustments based on window size
+		window.addEventListener('resize', function() {
+			let width = window.innerWidth;
+			let height = window.innerHeight;
+
+			// Adjustments for different screen widths
+			if (width < 600) {
+				// Mobile adjustments
+				document.body.style.fontSize = "14px"; 
+				document.getElementById("ordersTable").style.width = "100%";  
+			} else if (width < 1200) {
+				// Tablet adjustments
+				document.body.style.fontSize = "16px";
+				document.getElementById("ordersTable").style.width = "90%";
+			} else {
+				// Desktop adjustments
+				document.body.style.fontSize = "18px";
+				document.getElementById("ordersTable").style.width = "80%";
+			}
+		});
+
+// Hide or display specific columns based on screen width
+		window.addEventListener('resize', function() {
+			let width = window.innerWidth;
+			const noteColumn = document.querySelectorAll('th:nth-child(12), td:nth-child(12)');
+
+			if (width < 768) {
+				// Hide the note column on smaller screens
+				noteColumn.forEach(cell => {
+					cell.style.display = 'none';
+				});
+			} else {
+				// Show the note column on larger screens
+				noteColumn.forEach(cell => {
+					cell.style.display = 'table-cell';
+				});
+			}
+		});
+
+		// Adjust table height based on screen height
+		window.addEventListener('resize', function() {
+			let height = window.innerHeight;
+			const table = document.getElementById('ordersTable');
+
+			if (height < 800) {
+				table.style.maxHeight = '400px';
+				table.style.overflowY = 'scroll';  // Bật thanh cuộn dọc nếu vượt quá chiều cao
+			} else {
+				table.style.maxHeight = '600px';  // Màn hình lớn hơn thì tăng chiều cao bảng
+				table.style.overflowY = 'auto';
+			}
+		});
+
+	</script> -->
 </body>
 </html>

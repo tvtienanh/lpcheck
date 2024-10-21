@@ -92,8 +92,15 @@
             border-radius: 25px;
             padding: 5px 9px;
         }
+
+	.status-confirmed {
+	    color: #FFFFFF;
+            background-color: #1ac6ff; /* Xanh dương nhạt */
+            border-radius: 25px;
+            padding: 5px 9px;
+	}
 		
-		.status-wod {
+	.status-wod {
             color: #FFFFFF;
             background-color: #9126f0; /* Xanh dương */
             border-radius: 25px;
@@ -188,7 +195,7 @@
                 },
                 body: JSON.stringify({
                     query: `{
-                        records: orders(skip: 0, top: 25, filters: "${filterString}") {
+                        records: orders(skip: 0, top: 999, filters: "${filterString}") {
                             _id,
                             orders_code,
                             private_code,
@@ -227,8 +234,9 @@
                     waiting_temp_canceled: `<span class="status-waiting">Tạm huỷ</span>`,
                     internal_transport: `<span class="status-internal">Chuyển kho</span>`,
                     delivery: `<span class="status-delivery">Đang giao</span>`,
-					wod_confirmed: `<span class="status-wod">Nhập kho giao</span>`,
-					temp_cancelled: `<span class="status-cancelled">Tạm huỷ</span>`
+		    wod_confirmed: `<span class="status-wod">Nhập kho giao</span>`,
+		    temp_cancelled: `<span class="status-cancelled">Tạm huỷ</span>`,
+		    lp_confirmed: `<span class="status-confirmed">Đã xác nhận</span>`,
                 }[order.orders_status] || order.orders_status;
 
                 const paymentMethod = {

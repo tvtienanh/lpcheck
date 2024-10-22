@@ -144,6 +144,26 @@
         .amount, .payment, .shipping-fee {
             text-align: center; /* Căn giữa */
         }
+		
+		.page-btn {
+		padding: 10px;
+		margin: 0 5px;
+		background-color: #3E8E41;
+		color: white;
+		border: none;
+		cursor: pointer;
+		border-radius: 5px;
+		}
+
+		.page-btn.active {
+			background-color: #2B6A30;
+		}
+
+		.page-btn:hover {
+			background-color: #2B6A30;
+		}
+
+		
     </style>
 </head>
 <body>
@@ -177,6 +197,10 @@
             <!-- Dữ liệu sẽ được thêm vào đây bằng JavaScript -->
         </tbody>
     </table>
+		<div id="pagination" style="text-align:center; margin-top: 20px;">
+		<!-- Nút phân trang sẽ được tạo ở đây -->
+		</div>
+
 
     <script>
         async function fetchOrders() {
@@ -218,67 +242,96 @@
             renderOrders(data.data.records);
         }
 
-        function renderOrders(orders) {
-            const ordersBody = document.getElementById('ordersBody');
-            ordersBody.innerHTML = ''; // Xóa nội dung cũ
+        let currentPage = 1;
+		const itemsPerPage = 30;
 
-            let hasNotes = false;  // Biến kiểm tra nếu có ghi chú
+		function renderOrders(orders) {
+			const ordersBody = document.getElementById('ordersBody');
+			ordersBody.innerHTML = ''; // Xóa nội dung cũ
 
-            // Sắp xếp đơn hàng theo thời gian tạo, mới nhất lên đầu
-            orders.sort((a, b) => new Date(b.orders_created) - new Date(a.orders_created));
+			// Sắp xếp đơn hàng theo thời gian tạo, mới nhất lên đầu
+			orders.sort((a, b) => new Date(b.orders_created) - new Date(a.orders_created));
 
-            orders.forEach(order => {
-                const createdDate = new Date(order.orders_created).toLocaleDateString();
-                const status = {
-                    finished: `<span class="status-finished">Đã giao</span>`,
-                    waiting_temp_canceled: `<span class="status-waiting">Tạm huỷ</span>`,
-                    internal_transport: `<span class="status-internal">Chuyển kho</span>`,
-                    delivery: `<span class="status-delivery">Đang giao</span>`,
-		    wod_confirmed: `<span class="status-wod">Nhập kho giao</span>`,
-		    temp_cancelled: `<span class="status-cancelled">Tạm huỷ</span>`,
-		    lp_confirmed: `<span class="status-confirmed">Đã xác nhận</span>`,
-                }[order.orders_status] || order.orders_status;
+			const startIndex = (currentPage - 1) * itemsPerPage;
+			const endIndex = startIndex + itemsPerPage;
+			const paginatedOrders = orders.slice(startIndex, endIndex);
 
-                const paymentMethod = {
-                    bank: 'Không thu hộ',
-                    cash: 'COD'
-                }[order.mode_of_payment] || order.mode_of_payment;
+			paginatedOrders.forEach(order => {
+				const createdDate = new Date(order.orders_created).toLocaleDateString();
+				const status = {
+					finished: `<span class="status-finished">Đã giao</span>`,
+					waiting_temp_canceled: `<span class="status-waiting">Tạm huỷ</span>`,
+					internal_transport: `<span class="status-internal">Chuyển kho</span>`,
+					delivery: `<span class="status-delivery">Đang giao</span>`,
+					wod_confirmed: `<span class="status-wod">Nhập kho giao</span>`,
+					temp_cancelled: `<span class="status-cancelled">Tạm huỷ</span>`,
+					lp_confirmed: `<span class="status-confirmed">Đã xác nhận</span>`,
+				}[order.orders_status] || order.orders_status;
 
-                const noteCell = order.orders_temp_cancel_note ? order.orders_temp_cancel_note : '';
-                if (noteCell !== '') {
-                    hasNotes = true;  // Đặt cờ true nếu có ghi chú
-                }
+				const paymentMethod = {
+					bank: 'Không thu hộ',
+					cash: 'COD'
+				}[order.mode_of_payment] || order.mode_of_payment;
 
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${createdDate}</td>
-                    <td class="centered">${status}</td>
-                    <td class="long-text">${order.orders_code}</td>
-                    <td class="long-text">${order.private_code}</td>
-                    <td>${order.orders_customer_name}</td>
-                    <td>${order.orders_pod_name}</td>
-                    <td class="payment centered">${paymentMethod}</td>
-                    <td class="amount centered">${order.orders_amount ? order.orders_amount.toLocaleString('vi-VN') : 0}</td>
-                    <td class="shipping-fee centered">${order.orders_fee_aft_vat ? order.orders_fee_aft_vat.toLocaleString('vi-VN') : 0}</td>
-                    <td>${order.time_delivery_reality ? new Date(order.time_delivery_reality).toLocaleString() : ''}</td>
-                    <td style="border: 1px solid #000;" class="${noteCell === 'Không có ghi chú' ? '' : ''}">${noteCell}</td>
-                `;
+				const row = document.createElement('tr');
+				row.innerHTML = `
+					<td>${createdDate}</td>
+					<td class="centered">${status}</td>
+					<td class="long-text">${order.orders_code}</td>
+					<td class="long-text">${order.private_code}</td>
+					<td>${order.orders_customer_name}</td>
+					<td>${order.orders_pod_name}</td>
+					<td class="payment centered">${paymentMethod}</td>
+					<td class="amount centered">${order.orders_amount ? order.orders_amount.toLocaleString('vi-VN') : 0}</td>
+					<td class="shipping-fee centered">${order.orders_fee_aft_vat ? order.orders_fee_aft_vat.toLocaleString('vi-VN') : 0}</td>
+					<td>${order.time_delivery_reality ? new Date(order.time_delivery_reality).toLocaleString() : ''}</td>
+					<td>${order.orders_temp_cancel_note || ''}</td>
+				`;
+				ordersBody.appendChild(row);
+			});
+			
+			// Kiểm tra xem có bất kỳ ghi chú nào trên trang hiện tại không
+			const hasNotes = paginatedOrders.some(order => order.orders_temp_cancel_note);
 
-                ordersBody.appendChild(row);
-            });
-
-            const noteHeader = document.querySelector('th:nth-child(11)');
-            if (hasNotes) {
-                noteHeader.classList.remove('hidden');  // Hiển thị cột ghi chú nếu có ghi chú
-            } else {
-                noteHeader.classList.add('hidden');  // Ẩn cột ghi chú nếu không có ghi chú
-            }
-        }
+			// Hiển thị hoặc ẩn cột ghi chú dựa trên việc có ghi chú hay không
+			const noteHeader = document.querySelector('th:nth-child(11)');
+			if (hasNotes) {
+				noteHeader.classList.remove('hidden');  // Hiển thị cột ghi chú nếu có ghi chú
+			} else {
+				noteHeader.classList.add('hidden');  // Ẩn cột ghi chú nếu không có ghi chú
+			}
 
 
-        window.onload = () => {
-            fetchOrders(); // Tự động gọi hàm fetchOrders khi trang được tải
-        };
+			// Hiển thị các nút phân trang
+			renderPagination(orders.length);
+		}
+
+		function renderPagination(totalItems) {
+			const paginationContainer = document.getElementById('pagination');
+			paginationContainer.innerHTML = ''; // Xóa nội dung cũ
+
+			const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+			for (let i = 1; i <= totalPages; i++) {
+				const pageButton = document.createElement('button');
+				pageButton.textContent = i;
+				pageButton.className = 'page-btn';
+				if (i === currentPage) {
+					pageButton.classList.add('active');
+				}
+				pageButton.addEventListener('click', () => {
+					currentPage = i;
+					fetchOrders();  // Gọi lại hàm fetchOrders để hiển thị dữ liệu trang mới
+				});
+				paginationContainer.appendChild(pageButton);
+			}
+		}
+
+		// Gọi hàm fetchOrders khi trang được tải
+		window.onload = () => {
+			fetchOrders(); // Tự động gọi hàm fetchOrders khi trang được tải
+		};
+
     </script>
 	<!---script>
 			// Responsive adjustments based on window size

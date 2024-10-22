@@ -232,7 +232,7 @@
                             orders_created,
                             mode_of_payment,
                             time_delivery_reality,
-							orders_delivery_schedule__expand {_id, delivery_schedule_name}
+			    orders_delivery_schedule__expand {_id, delivery_schedule_name}
                             orders_temp_cancel_note
                         },
                         count: orders__count
@@ -297,7 +297,7 @@
 			const hasNotes = paginatedOrders.some(order => order.orders_temp_cancel_note);
 
 			// Hiển thị hoặc ẩn cột ghi chú dựa trên việc có ghi chú hay không
-			const noteHeader = document.querySelector('th:nth-child(11)');
+			const noteHeader = document.querySelector('th:nth-child(12)');
 			if (hasNotes) {
 				noteHeader.classList.remove('hidden');  // Hiển thị cột ghi chú nếu có ghi chú
 			} else {

@@ -95,6 +95,13 @@
 
 	.status-confirmed {
 	    color: #FFFFFF;
+            background-color: #ffc266; /* Xanh dương nhạt */
+            border-radius: 25px;
+            padding: 5px 9px;
+	}
+
+	.status-new {
+	    color: #FFFFFF;
             background-color: #1ac6ff; /* Xanh dương nhạt */
             border-radius: 25px;
             padding: 5px 9px;
@@ -232,7 +239,7 @@
                             orders_created,
                             mode_of_payment,
                             time_delivery_reality,
-							orders_delivery_schedule__expand {_id, delivery_schedule_name}
+			    orders_delivery_schedule__expand {_id, delivery_schedule_name}
                             orders_temp_cancel_note
                         },
                         count: orders__count
@@ -268,6 +275,7 @@
 					wod_confirmed: `<span class="status-wod">Nhập kho giao</span>`,
 					temp_cancelled: `<span class="status-cancelled">Tạm huỷ</span>`,
 					lp_confirmed: `<span class="status-confirmed">Đã xác nhận</span>`,
+					new: `<span class="status-new">Mới(Đã đóng gói)M</span>,
 				}[order.orders_status] || order.orders_status;
 
 				const paymentMethod = {

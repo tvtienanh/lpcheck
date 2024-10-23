@@ -180,7 +180,8 @@
     <table id="ordersTable">
         <thead>
             <tr>
-                <th>Thời gian</th>
+                <th>Ngày đơn hàng</th>
+		<th>Lịch giao hàng</th>
                 <th class="status-column">Trạng thái</th>
                 <th>Mã đơn hàng</th>
                 <th class="long-text">Đơn đặt hàng</th>
@@ -189,7 +190,6 @@
                 <th class="payment">Thanh toán</th>
                 <th class="amount">Giá trị đơn</th>
                 <th class="shipping-fee">Phí giao hàng</th>
-				<th>Lịch giao hàng</th>
                 <th>Thời gian giao</th>
                 <th class="hidden">Ghi chú</th>
             </tr>
@@ -278,6 +278,7 @@
 				const row = document.createElement('tr');
 				row.innerHTML = `
 					<td>${createdDate}</td>
+					<td>${order.orders_delivery_schedule__expand.delivery_schedule_name}</td>
 					<td class="centered">${status}</td>
 					<td class="long-text">${order.orders_code}</td>
 					<td class="long-text">${order.private_code}</td>
@@ -286,7 +287,6 @@
 					<td class="payment centered">${paymentMethod}</td>
 					<td class="amount centered">${order.orders_amount ? order.orders_amount.toLocaleString('vi-VN') : 0}</td>
 					<td class="shipping-fee centered">${order.orders_fee_aft_vat ? order.orders_fee_aft_vat.toLocaleString('vi-VN') : 0}</td>
-					<td>${order.orders_delivery_schedule__expand.delivery_schedule_name}</td>
 					<td>${order.time_delivery_reality ? new Date(order.time_delivery_reality).toLocaleString() : ''}</td>
 					<td>${order.orders_temp_cancel_note || ''}</td>
 				`;

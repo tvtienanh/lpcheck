@@ -226,6 +226,33 @@
       <button id="searchBtn" type="button" onclick="fetchOrders()">Tra Cứu</button>
       <a href="viber://chat?number=%2B84915665422" target="_self" class="viber-button">Liên hệ kho qua Viber</a>
     </div>
+	<div id="filterContainer" style="margin-top: 20px; display: flex; align-items: center;">
+	  <!-- Dropdown chọn cột -->
+	  <label for="columnSelect">Chọn cột:</label>
+	  <select id="columnSelect" style="margin-left: 10px;">
+		<option value="">-- Chọn cột --</option>
+		<option value="orders_created">Ngày đơn hàng</option>
+		<option value="orders_status">Trạng thái</option>
+		<option value="orders_code">Mã đơn hàng</option>
+		<option value="private_code">Đơn đặt hàng</option>
+		<option value="orders_customer_name">Khách hàng</option>
+		<option value="mode_of_payment">Thanh toán</option>
+	  </select>
+
+	  <!-- Dropdown chọn giá trị nếu không phải cột ngày -->
+	  <label for="valueSelect" style="margin-left: 20px;" id="valueLabel">Chọn giá trị lọc:</label>
+	  <select id="valueSelect" style="margin-left: 10px;">
+		<option value="">-- Chọn giá trị --</option>
+	  </select>
+
+	  <!-- Bảng lịch chọn ngày -->
+	  <label for="datePicker" style="margin-left: 20px; display: none;" id="dateLabel">Chọn ngày:</label>
+	  <input id="datePicker" type="text" style="margin-left: 10px; display: none;">
+
+	  <button id="applyFilterBtn" type="button" style="margin-left: 20px;">Áp dụng lọc</button>
+	</div>
+
+
     <button id="exportBtn" type="button" onclick="exportSelectedOrders()">Xuất Dữ Liệu</button>
     <table id="ordersTable">
       <thead>
@@ -420,5 +447,85 @@
       }
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+	<script>
+		// Hàm chuyển đổi dữ liệu thành dạng hiển thị thân thiện trên web
+		function formatDisplayedValue(column, value) {
+		  if (column === 'orders_created') {
+			const date = new Date(value);
+			return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+		  } else if (column === 'orders_status') {
+			const statusMap = {
+			  finished: 'Đã giao',
+			  waiting_temp_canceled: 'Tạm huỷ',
+			  internal_transport: 'Chuyển kho',
+			  delivery: 'Đang giao',
+			  wod_confirmed: 'Nhập kho giao',
+			  temp_cancelled: 'Tạm huỷ',
+			  lp_confirmed: 'Đã xác nhận',
+			  new: 'Mới (Đã đóng gói)',
+			  cancelled: 'Đã bị huỷ'
+			};
+			return statusMap[value] || value;
+		  } else if (column === 'mode_of_payment') {
+			const paymentMap = {
+			  cash: 'COD',
+			  bank: 'Không thu hộ'
+			};
+			return paymentMap[value] || value;
+		  }
+		  return value;
+		}
+
+		// Cập nhật các option trong dropdown giá trị khi cột được chọn
+		function updateFilterOptions() {
+		  const column = document.getElementById('columnSelect').value;
+		  const valueSelect = document.getElementById('valueSelect');
+		  valueSelect.innerHTML = '<option value="">-- Chọn giá trị --</option>';
+
+		  if (!column) return;
+
+		  const uniqueValues = [...new Set(cachedOrders.map(order => formatDisplayedValue(column, order[column])))];
+		  uniqueValues.forEach(displayedValue => {
+			const rawValue = cachedOrders.find(order => formatDisplayedValue(column, order[column]) === displayedValue)[column];
+			const option = document.createElement('option');
+			option.value = rawValue; // Dùng giá trị thô để lọc
+			option.textContent = displayedValue; // Hiển thị giá trị đã được format
+			valueSelect.appendChild(option);
+		  });
+		}
+
+		// Áp dụng bộ lọc với giá trị thô dựa trên lựa chọn người dùng
+		function applyFilter() {
+		  const column = document.getElementById('columnSelect').value;
+		  const rawValue = document.getElementById('valueSelect').value;
+
+		  if (!column || !rawValue) {
+			alert("Vui lòng chọn cả cột và giá trị để lọc.");
+			return;
+		  }
+
+		  let filteredOrders;
+		  if (column === 'orders_created') {
+			// So sánh ngày mà không tính đến giờ
+			const selectedDate = new Date(rawValue);
+			filteredOrders = cachedOrders.filter(order => {
+			  const orderDate = new Date(order[column]);
+			  return orderDate.getDate() === selectedDate.getDate() &&
+					 orderDate.getMonth() === selectedDate.getMonth() &&
+					 orderDate.getFullYear() === selectedDate.getFullYear();
+			});
+		  } else {
+			// Lọc theo các cột khác
+			filteredOrders = cachedOrders.filter(order => order[column] === rawValue);
+		  }
+
+		  renderOrders(filteredOrders);
+		}
+
+		// Gọi các hàm khi người dùng thay đổi lựa chọn hoặc áp dụng lọc
+		document.getElementById('columnSelect').addEventListener('change', updateFilterOptions);
+		document.getElementById('applyFilterBtn').addEventListener('click', applyFilter);
+
+	</script>
   </body>
 </html>

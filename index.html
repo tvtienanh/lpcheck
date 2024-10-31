@@ -1,611 +1,411 @@
 <!DOCTYPE html>
 <html lang="vi">
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tra Cứu Đơn Hàng</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 20px
-      }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
 
-      h1 {
-        text-align: center;
-        color: #3E8E41
-      }
+        h1 {
+            text-align: center;
+            color: #3E8E41; /* Màu tiêu đề */
+        }
 
-      .search-container {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 20px
-      }
+        .search-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
 
-      input[type="text"] {
-        padding: 10px;
-        border: 2px solid #3E8E41;
-        border-radius: 5px;
-        font-size: 16px;
-        width: 300px
-      }
+        input[type="text"] {
+            padding: 10px;
+            border: 2px solid #3E8E41; /* Viền màu xanh */
+            border-radius: 5px;
+            font-size: 16px;
+            width: 300px;
+        }
 
-      button {
-        padding: 10px 15px;
-        margin-left: 10px;
-        background-color: #3E8E41;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        font-size: 16px;
-        cursor: pointer
-      }
+        button {
+            padding: 10px 15px;
+            margin-left: 10px;
+            background-color: #3E8E41; /* Màu nền nút */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
 
-      button:hover {
-        background-color: #2B6A30
-      }
+        button:hover {
+            background-color: #2B6A30; /* Màu nền nút khi hover */
+        }
 
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-        border: 2px solid #000
-      }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border: 2px solid #000; /* Viền đen */
+        }
 
-      th,
-      td {
-        border: 1px solid #000;
-        padding: 8px;
-        text-align: left;
-        font-size: 14px;
-        height: 40px
-      }
+        th, td {
+            border: 1px solid #000; /* Viền đen cho ô */
+            padding: 8px;
+            text-align: left;
+            font-size: 14px;
+            height: 40px; /* Chiều cao cố định cho tất cả các ô */
+        }
 
-      th {
-        background-color: #A3D9E0;
-        text-align: center
-      }
+        th {
+            background-color: #A3D9E0; /* Màu header bảng */
+            text-align: center; /* Căn giữa header */
+        }
 
-      .status-finished {
-        color: #FFFFFF;
-        background-color: #4CAF50;
-        border-radius: 25px;
-        padding: 5px 9px
-      }
+        .status-finished {
+            color: #FFFFFF;
+            background-color: #4CAF50; /* Xanh lá */
+            border-radius: 25px;
+            padding: 5px 9px;
+        }
 
-      .status-waiting,
-      .status-cancelled,
-      .status-be-cancelled {
-        color: #FFFFFF;
-        background-color: #F44336;
-        border-radius: 25px;
-        padding: 5px 9px
-      }
+        .status-waiting, .status-cancelled  {
+            color: #FFFFFF;
+            background-color: #F44336; /* Đỏ */
+            border-radius: 25px;
+            padding: 5px 9px;
+        }
 
-      .status-internal {
-        color: #FFFFFF;
-        background-color: #9C27B0;
-        border-radius: 25px;
-        padding: 5px 9px
-      }
+        .status-internal {
+            color: #FFFFFF;
+            background-color: #9C27B0; /* Tím */
+            border-radius: 25px;
+            padding: 5px 9px;
+        }
 
-      .status-delivery {
-        color: #FFFFFF;
-        background-color: #2196F3;
-        border-radius: 25px;
-        padding: 5px 9px
-      }
+        .status-delivery {
+            color: #FFFFFF;
+            background-color: #2196F3; /* Xanh dương */
+            border-radius: 25px;
+            padding: 5px 9px;
+        }
 
-      .status-confirmed {
-        color: #FFFFFF;
-        background-color: #ffc266;
-        border-radius: 25px;
-        padding: 5px 9px
-      }
+	.status-confirmed {
+	    color: #FFFFFF;
+            background-color: #ffc266; /* Xanh dương nhạt */
+            border-radius: 25px;
+            padding: 5px 9px;
+	}
 
-      .status-new {
-        color: #FFFFFF;
-        background-color: #1ac6ff;
-        border-radius: 25px;
-        padding: 5px 9px
-      }
+	.status-new {
+	    color: #FFFFFF;
+            background-color: #1ac6ff; /* Xanh dương nhạt */
+            border-radius: 25px;
+            padding: 5px 9px;
+	}
+		
+	.status-wod {
+            color: #FFFFFF;
+            background-color: #9126f0; /* Xanh dương */
+            border-radius: 25px;
+            padding: 5px 9px;
+        }
 
-      .status-wod {
-        color: #FFFFFF;
-        background-color: #9126f0;
-        border-radius: 25px;
-        padding: 5px 9px
-      }
+        .hidden {
+            display: none; /* Ẩn ghi chú */
+        }
 
-      .hidden {
-        display: none
-      }
+        .long-text {
+            max-width: 150px; /* Kích thước cố định cho cột */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
 
-      .long-text {
-        max-width: 150px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap
-      }
-
-      .status-column {
-        width: 100px;
-        min-width: 130px;
-        max-width: 150px;
-        text-align: center
-      }
-
-      .viber-button {
-        margin-left: 20px;
+        .status-column {
+            width: 100px; /* Chiều rộng của cột trạng thái, điều chỉnh theo nhu cầu */
+            min-width: 130px; /* Chiều rộng tối thiểu để cột không bị co lại */
+            max-width: 150px; /* Chiều rộng tối đa để cột không bị kéo dài quá mức */
+            text-align: center;
+        }
+		
+		.viber-button {
+		margin-left: 20px;
         display: inline-block;
         padding: 10px 20px;
-        background-color: #59267C;
+        background-color: #59267C; /* Màu đặc trưng của Viber */
         color: white;
         text-decoration: none;
         border-radius: 5px;
         font-size: 16px;
-        font-weight: bold
-      }
-
-      .viber-button:hover {
-        background-color: #7D3BB7
-      }
-
-      .amount,
-      .payment,
-      .shipping-fee {
-        text-align: center
-      }
-
-      .page-btn {
-        padding: 10px;
-        margin: 0 5px;
-        background-color: #3E8E41;
-        color: white;
-        border: none;
-        cursor: pointer;
-        border-radius: 5px
-      }
-
-      .page-btn.active {
-        background-color: #2B6A30
-      }
-
-      .page-btn:hover {
-        background-color: #2B6A30
-      }
-
-      .notification {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background-color: #333;
-        color: #fff;
-        padding: 10px 20px;
-        border-radius: 5px;
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
-        z-index: 1000;
-        font-size: 14px;
-        opacity: 0.9;
-        display: flex;
-        align-items: center;
-        opacity: 0;
-        transition: opacity 0.5s ease-in-out
-      }
-
-      .notification.visible {
-        opacity: 1;
-        transition: opacity 0.5s ease-in-out
-      }
-
-      .notification.hidden {
-        display: none
-      }
-
-      .notification.success {
-        background-color: #4CAF50
-      }
-
-      .notification.error {
-        background-color: #F44336
-      }
-
-      input[type=checkbox] {
-        transform: scale(1.8);
-        margin-left: 21px
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Tra Cứu Đơn Hàng</h1>
-    <div id="notification" class="notification hidden">
-      <span id="notificationMessage"></span>
-    </div>
-    <div class="search-container">
-      <input type="text" id="privateCode" placeholder="Nhập mã đơn hàng, tên khách hàng,... để tra cứu">
-      <button id="searchBtn" type="button" onclick="fetchOrders()">Tra Cứu</button>
-      <a href="viber://chat?number=%2B84915665422" target="_self" class="viber-button">Liên hệ kho qua Viber</a>
-    </div>
-	<div id="filterContainer" style="margin-top: 20px; display: flex; align-items: center;">
-	  <!-- Dropdown chọn cột -->
-	  <label for="columnSelect">Chọn cột:</label>
-	  <select id="columnSelect" style="margin-left: 10px;">
-		<option value="">-- Chọn cột --</option>
-		<option value="orders_created">Ngày đơn hàng</option>
-		<option value="orders_status">Trạng thái</option>
-		<option value="orders_code">Mã đơn hàng</option>
-		<option value="private_code">Đơn đặt hàng</option>
-		<option value="orders_customer_name">Khách hàng</option>
-		<option value="mode_of_payment">Thanh toán</option>
-	  </select>
-
-	  <!-- Dropdown chọn giá trị nếu không phải cột ngày -->
-	  <label for="valueSelect" style="margin-left: 20px;" id="valueLabel">Chọn giá trị lọc:</label>
-	  <select id="valueSelect" style="margin-left: 10px;">
-		<option value="">-- Chọn giá trị --</option>
-	  </select>
-
-	  <!-- Bảng lịch chọn ngày -->
-	  <label for="datePicker" style="margin-left: 20px; display: none;" id="dateLabel">Chọn ngày:</label>
-	  <input id="datePicker" type="text" style="margin-left: 10px; display: none;">
-
-	  <button id="applyFilterBtn" type="button" style="margin-left: 20px;">Áp dụng lọc</button>
-	</div>
-
-
-    <button id="exportBtn" type="button" onclick="exportSelectedOrders()">Xuất Dữ Liệu</button>
-    <table id="ordersTable">
-      <thead>
-        <tr>
-          <th class="checker-column">Checker</th>
-          <th>Ngày đơn hàng</th>
-          <th>Lịch giao hàng</th>
-          <th class="status-column">Trạng thái</th>
-          <th>Mã đơn hàng</th>
-          <th class="long-text">Đơn đặt hàng</th>
-          <th>Khách hàng</th>
-          <th>Địa chỉ giao</th>
-          <th class="payment">Thanh toán</th>
-          <th class="amount">Giá trị đơn</th>
-          <th class="shipping-fee">Phí giao hàng</th>
-          <th>Thời gian giao</th>
-          <th class="hidden">Ghi chú</th>
-        </tr>
-      </thead>
-      <tbody id="ordersBody"></tbody>
-    </table>
-    <div id="pagination" style="text-align:center; margin-top:20px;"></div>
-    <script>
-      let isFirstLoad = true;
-      let cachedOrders = [];
-      async function fetchOrders() {
-        cachedOrders = [];
-        if (cachedOrders.length > 0) {
-          renderOrders(cachedOrders);
-          return
-        }
-        const privateCode = document.getElementById('privateCode').value;
-        let filterString = '';
-        if (privateCode) {
-          filterString = `(((contains(private_code,'${privateCode}')) or (contains(orders_cancel_reason,'${privateCode}')) or (contains(orders_code,'${privateCode}')) or (contains(orders_temp_cancel_full_reason,'${privateCode}')) or (contains(orders_temp_cancel_reason,'${privateCode}')) or (contains(pod_districts,'${privateCode}')) or (contains(orders_customer_name,'${privateCode}'))))`
-        }
-        const response = await fetch("https://giaoduocpham.vn/graphql", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer BAJ2DY4ZoepiEXmAd,7670d8f330af99fa7f34e9d2158e0b7a2d50dba546f10074fdf5aa41f5cf75ecf2e0295951522e20395bca"
-          },
-          body: JSON.stringify({
-            query: `{records: orders(skip: 0, top: 999, filters: "${filterString}") {_id,orders_code,private_code,orders_status,orders_amount,orders_fee_aft_vat,orders_pod_name,orders_customer_name,orders_created,mode_of_payment,time_delivery_reality,orders_delivery_schedule__expand {_id,delivery_schedule_name} orders_temp_cancel_note},count: orders__count}`
-          })
-        });
-        const data = await response.json();
-        cachedOrders = data.data.records;
-        renderOrders(cachedOrders);
-        isFirstLoad = false
-      }
-      let currentPage = 1;
-      const itemsPerPage = 30;
-
-      function renderOrders(orders) {
-        const ordersBody = document.getElementById('ordersBody');
-        ordersBody.innerHTML = '';
-        orders.sort((a, b) => new Date(b.orders_created) - new Date(a.orders_created));
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-        const paginatedOrders = orders.slice(startIndex, endIndex);
-        paginatedOrders.forEach(order => {
-          const createdDate = new Date(order.orders_created).toLocaleDateString();
-          const status = {
-            finished: `
-						<span class="status-finished">Đã giao</span>`,
-            waiting_temp_canceled: `
-						<span class="status-waiting">Tạm huỷ</span>`,
-            internal_transport: `
-						<span class="status-internal">Chuyển kho</span>`,
-            delivery: `
-						<span class="status-delivery">Đang giao</span>`,
-            wod_confirmed: `
-						<span class="status-wod">Nhập kho giao</span>`,
-            temp_cancelled: `
-						<span class="status-cancelled">Tạm huỷ</span>`,
-            lp_confirmed: `
-						<span class="status-confirmed">Đã xác nhận</span>`,
-            new: `
-						<span class="status-new">Mới(Đã đóng gói)</span>`,
-            cancelled: `
-						<span class="status-be-cancelled">Đã bị huỷ</span>`
-          } [order.orders_status] || order.orders_status;
-          const paymentMethod = {
-            bank: 'Không thu hộ',
-            cash: 'COD'
-          } [order.mode_of_payment] || order.mode_of_payment;
-          const row = document.createElement('tr');
-          row.innerHTML = `
-						<td class="checker-cell">
-							<input type="checkbox" class="order-checkbox">
-							</td>
-							<td>${createdDate}</td>
-							<td>${order.orders_delivery_schedule__expand.delivery_schedule_name}</td>
-							<td class="centered">${status}</td>
-							<td class="long-text">${order.orders_code}</td>
-							<td class="long-text">${order.private_code}</td>
-							<td>${order.orders_customer_name}</td>
-							<td>${order.orders_pod_name}</td>
-							<td class="payment centered">${paymentMethod}</td>
-							<td class="amount centered">${order.orders_amount?order.orders_amount.toLocaleString('vi-VN'):0}</td>
-							<td class="shipping-fee centered">${order.orders_fee_aft_vat?order.orders_fee_aft_vat.toLocaleString('vi-VN'):0}</td>
-							<td>${order.time_delivery_reality?new Date(order.time_delivery_reality).toLocaleString():''}</td>
-							<td>${order.orders_temp_cancel_note||''}</td>`;
-          ordersBody.appendChild(row)
-        });
-        const noteHeader = document.querySelector('th:nth-child(13)');
-        const rows = document.querySelectorAll('#ordersTable tr');
-        const hasNotes = paginatedOrders.some(order => order.orders_temp_cancel_note);
-        if (hasNotes) {
-          rows.forEach(row => {
-            row.cells[11].style.display = '';
-            noteHeader.classList.remove('hidden')
-          })
-        } else {
-          rows.forEach(row => {
-            row.cells[11].style.display = 'none'
-          })
-        }
-        renderPagination(orders.length)
-      }
-
-      function renderPagination(totalItems) {
-			const paginationContainer = document.getElementById('pagination');
-			paginationContainer.innerHTML = '';
-			const totalPages = Math.ceil(totalItems / itemsPerPage);
-			for (let i = 1; i <= totalPages; i++) {
-			  const pageButton = document.createElement('button');
-			  pageButton.textContent = i;
-			  pageButton.className = 'page-btn';
-			  if (i === currentPage) {
-				pageButton.classList.add('active')
-			  }
-			  pageButton.addEventListener('click', () => {
-				currentPage = i;
-				renderOrders(cachedOrders)
-			  });
-			  paginationContainer.appendChild(pageButton)
-			}
-		  }
-		  window.onload = fetchOrders;
-		  document.getElementById('searchBtn').addEventListener('click', () => {
-			cachedOrders = [];
-			fetchOrders()
-		  });
-
-		function exportSelectedOrders() {
-		  const checkboxes = document.querySelectorAll('.order-checkbox');
-		  const selectedOrders = [];
-
-		  checkboxes.forEach((checkbox) => {
-			if (checkbox.checked) {
-			  const row = checkbox.closest('tr');
-			  const cells = Array.from(row.querySelectorAll('td')).slice(1);
-			  const orderData = cells.map(cell => cell.innerText);
-			  selectedOrders.push(orderData);
-			}
-		  });
-
-		  // Nếu không có đơn hàng nào được chọn, chuyển đổi dữ liệu thô thành dữ liệu tinh chỉnh
-		  const exportData = selectedOrders.length > 0 ? selectedOrders : cachedOrders.map(order => [
-			// Chuyển đổi ngày thành định dạng dễ đọc
-			new Date(order.orders_created).toLocaleDateString('vi-VN'),
-
-			// Lịch giao hàng
-			order.orders_delivery_schedule__expand.delivery_schedule_name || '',
-
-			// Chuyển đổi mã trạng thái thành tên trạng thái dễ hiểu
-			{
-			  finished: 'Đã giao',
-			  waiting_temp_canceled: 'Tạm huỷ',
-			  internal_transport: 'Chuyển kho',
-			  delivery: 'Đang giao',
-			  wod_confirmed: 'Nhập kho giao',
-			  temp_cancelled: 'Tạm huỷ',
-			  lp_confirmed: 'Đã xác nhận',
-			  new: 'Mới (Đã đóng gói)',
-			  cancelled: 'Đã bị huỷ'
-			}[order.orders_status] || order.orders_status,
-
-			// Mã đơn hàng
-			order.orders_code,
-
-			// Đơn đặt hàng
-			order.private_code,
-
-			// Tên khách hàng
-			order.orders_customer_name,
-
-			// Địa chỉ giao hàng
-			order.orders_pod_name,
-
-			// Phương thức thanh toán (COD hoặc Không thu hộ)
-			order.mode_of_payment === 'cash' ? 'COD' : 'Không thu hộ',
-
-			// Giá trị đơn hàng, định dạng tiền tệ
-			order.orders_amount ? order.orders_amount.toLocaleString('vi-VN') : 0,
-
-			// Phí giao hàng, định dạng tiền tệ
-			order.orders_fee_aft_vat ? order.orders_fee_aft_vat.toLocaleString('vi-VN') : 0,
-
-			// Thời gian giao thực tế, định dạng ngày giờ
-			order.time_delivery_reality ? new Date(order.time_delivery_reality).toLocaleString('vi-VN') : '',
-
-			// Ghi chú, nếu có
-			order.orders_temp_cancel_note || ''
-		  ]);
-
-		  // Tạo workbook và worksheet
-		  const wb = XLSX.utils.book_new();
-		  const wsData = [
-			["Ngày đơn hàng", "Lịch giao hàng", "Trạng thái", "Mã đơn hàng", "Đơn đặt hàng", "Khách hàng", "Địa chỉ giao", "Thanh toán", "Giá trị đơn", "Phí giao hàng", "Thời gian giao", "Ghi chú"], 
-			...exportData
-		  ];
-		  const ws = XLSX.utils.aoa_to_sheet(wsData);
-
-		  // Tùy chỉnh cột tự động, font chữ, in đậm header và bo viền
-		  wsData.forEach((row, rowIndex) => {
-			row.forEach((_, colIndex) => {
-			  const cellAddress = XLSX.utils.encode_cell({ r: rowIndex, c: colIndex });
-			  if (!ws[cellAddress]) return;
-
-			  ws[cellAddress].s = {
-				font: {
-				  name: "Times New Roman",
-				  sz: 12,
-				  bold: rowIndex === 0
-				},
-				alignment: {
-				  vertical: "center",
-				  horizontal: "center",
-				  wrapText: true
-				},
-				border: {
-				  top: { style: "thin" },
-				  bottom: { style: "thin" },
-				  left: { style: "thin" },
-				  right: { style: "thin" }
-				}
-			  };
-			});
-		  });
-
-		  // Tự động điều chỉnh độ rộng cột
-		  ws['!cols'] = wsData[0].map(() => ({ wch: 20 }));
-
-		  XLSX.utils.book_append_sheet(wb, ws, "Orders");
-
-		  const today = new Date();
-		  const fileName = `LP_Data_${today.getDate()}_${today.getMonth() + 1}.xlsx`;
-		  XLSX.writeFile(wb, fileName);
-		  
-		  showNotification("Đã xuất thành công", "success");
+        font-weight: bold;
 		}
 
+		.viber-button:hover {
+		background-color: #7D3BB7; /* Màu khi hover */
+		}
+
+        .amount, .payment, .shipping-fee {
+            text-align: center; /* Căn giữa */
+        }
+		
+		.page-btn {
+		padding: 10px;
+		margin: 0 5px;
+		background-color: #3E8E41;
+		color: white;
+		border: none;
+		cursor: pointer;
+		border-radius: 5px;
+		}
+
+		.page-btn.active {
+			background-color: #2B6A30;
+		}
+
+		.page-btn:hover {
+			background-color: #2B6A30;
+		}
+
+		
+    </style>
+</head>
+<body>
+
+    <h1>Tra Cứu Đơn Hàng</h1>
+
+    <div class="search-container">
+        <input type="text" id="privateCode" placeholder="Nhập mã đơn hàng, tên khách hàng,... để tra cứu">
+        <button id="searchBtn" onclick="fetchOrders()">Tra Cứu</button>
+		<a href="viber://chat?number=%2B84915665422" target="_self" class="viber-button">Liên hệ kho</a>
+    </div>
+	
+
+    <table id="ordersTable">
+        <thead>
+            <tr>
+                <th>Ngày đơn hàng</th>
+		<th>Lịch giao hàng</th>
+                <th class="status-column">Trạng thái</th>
+                <th>Mã đơn hàng</th>
+                <th class="long-text">Đơn đặt hàng</th>
+                <th>Khách hàng</th>
+                <th>Địa chỉ giao</th>
+                <th class="payment">Thanh toán</th>
+                <th class="amount">Giá trị đơn</th>
+                <th class="shipping-fee">Phí giao hàng</th>
+                <th>Thời gian giao</th>
+                <th class="hidden">Ghi chú</th>
+            </tr>
+        </thead>
+        <tbody id="ordersBody">
+            <!-- Dữ liệu sẽ được thêm vào đây bằng JavaScript -->
+        </tbody>
+    </table>
+		<div id="pagination" style="text-align:center; margin-top: 20px;">
+		<!-- Nút phân trang sẽ được tạo ở đây -->
+		</div>
 
 
+    <script>
+        async function fetchOrders() {
+            const privateCode = document.getElementById('privateCode').value;
+            let filterString = '';
+
+            if (privateCode) {
+                filterString = `(((contains(private_code,'${privateCode}')) or (contains(orders_cancel_reason,'${privateCode}')) or (contains(orders_code,'${privateCode}')) or (contains(orders_temp_cancel_full_reason,'${privateCode}')) or (contains(orders_temp_cancel_reason,'${privateCode}')) or (contains(pod_districts,'${privateCode}')) or (contains(orders_customer_name,'${privateCode}'))))`;
+            }
+
+            const response = await fetch("https://giaoduocpham.vn/graphql", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer BAJ2DY4ZoepiEXmAd,7670d8f330af99fa7f34e9d2158e0b7a2d50dba546f10074fdf5aa41f5cf75ecf2e0295951522e20395bca"
+                },
+                body: JSON.stringify({
+                    query: `{
+                        records: orders(skip: 0, top: 999, filters: "${filterString}") {
+                            _id,
+                            orders_code,
+                            private_code,
+                            orders_status,
+                            orders_amount,
+                            orders_fee_aft_vat,
+                            orders_pod_name,
+                            orders_customer_name,
+                            orders_created,
+                            mode_of_payment,
+                            time_delivery_reality,
+			    orders_delivery_schedule__expand {_id, delivery_schedule_name}
+                            orders_temp_cancel_note
+                        },
+                        count: orders__count
+                    }`
+                })
+            });
+
+            const data = await response.json();
+            renderOrders(data.data.records);
+        }
+
+        let currentPage = 1;
+		const itemsPerPage = 30;
+
+		function renderOrders(orders) {
+			const ordersBody = document.getElementById('ordersBody');
+			ordersBody.innerHTML = ''; // Xóa nội dung cũ
+
+			// Sắp xếp đơn hàng theo thời gian tạo, mới nhất lên đầu
+			orders.sort((a, b) => new Date(b.orders_created) - new Date(a.orders_created));
+
+			const startIndex = (currentPage - 1) * itemsPerPage;
+			const endIndex = startIndex + itemsPerPage;
+			const paginatedOrders = orders.slice(startIndex, endIndex);
+
+			paginatedOrders.forEach(order => {
+				const createdDate = new Date(order.orders_created).toLocaleDateString();
+				const status = {
+					finished: `<span class="status-finished">Đã giao</span>`,
+					waiting_temp_canceled: `<span class="status-waiting">Tạm huỷ</span>`,
+					internal_transport: `<span class="status-internal">Chuyển kho</span>`,
+					delivery: `<span class="status-delivery">Đang giao</span>`,
+					wod_confirmed: `<span class="status-wod">Nhập kho giao</span>`,
+					temp_cancelled: `<span class="status-cancelled">Tạm huỷ</span>`,
+					lp_confirmed: `<span class="status-confirmed">Đã xác nhận</span>`,
+					new: `<span class="status-new">Mới(Đã đóng gói)</span>`,
+				}[order.orders_status] || order.orders_status;
+
+				const paymentMethod = {
+					bank: 'Không thu hộ',
+					cash: 'COD'
+				}[order.mode_of_payment] || order.mode_of_payment;
+
+				const row = document.createElement('tr');
+				row.innerHTML = `
+					<td>${createdDate}</td>
+					<td>${order.orders_delivery_schedule__expand.delivery_schedule_name}</td>
+					<td class="centered">${status}</td>
+					<td class="long-text">${order.orders_code}</td>
+					<td class="long-text">${order.private_code}</td>
+					<td>${order.orders_customer_name}</td>
+					<td>${order.orders_pod_name}</td>
+					<td class="payment centered">${paymentMethod}</td>
+					<td class="amount centered">${order.orders_amount ? order.orders_amount.toLocaleString('vi-VN') : 0}</td>
+					<td class="shipping-fee centered">${order.orders_fee_aft_vat ? order.orders_fee_aft_vat.toLocaleString('vi-VN') : 0}</td>
+					<td>${order.time_delivery_reality ? new Date(order.time_delivery_reality).toLocaleString() : ''}</td>
+					<td>${order.orders_temp_cancel_note || ''}</td>
+				`;
+				ordersBody.appendChild(row);
+			});
+			
+			// Chọn tất cả các hàng trong bảng
+			const noteHeader = document.querySelector('th:nth-child(12)');
+			const rows = document.querySelectorAll('#ordersTable tr');
+
+			// Kiểm tra xem có bất kỳ ghi chú nào trên trang hiện tại không
+			const hasNotes = paginatedOrders.some(order => order.orders_temp_cancel_note);
+
+			// Hiển thị hoặc ẩn cột ghi chú dựa trên việc có ghi chú hay không
+			if (hasNotes) {
+				rows.forEach(row => {
+					row.cells[11].style.display = ''; // Hiển thị cột ghi chú nếu có ghi chú
+					noteHeader.classList.remove('hidden');
+				});
+			} else {
+				rows.forEach(row => {
+					row.cells[11].style.display = 'none'; // Ẩn cột ghi chú nếu không có ghi chú
+				});
+			}
 
 
+			// Hiển thị các nút phân trang
+			renderPagination(orders.length);
+		}
 
-      function showNotification(message, type) {
-        const notification = document.getElementById('notification');
-        const notificationMessage = document.getElementById('notificationMessage');
-        notificationMessage.innerText = message;
-        notification.className = `notification ${type} visible`;
-        setTimeout(() => {
-          notification.classList.remove('visible')
-        }, 3000);
-        setTimeout(() => {
-          notification.classList.add('hidden')
-        }, 3500)
-      }
+		function renderPagination(totalItems) {
+			const paginationContainer = document.getElementById('pagination');
+			paginationContainer.innerHTML = ''; // Xóa nội dung cũ
+
+			const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+			for (let i = 1; i <= totalPages; i++) {
+				const pageButton = document.createElement('button');
+				pageButton.textContent = i;
+				pageButton.className = 'page-btn';
+				if (i === currentPage) {
+					pageButton.classList.add('active');
+				}
+				pageButton.addEventListener('click', () => {
+					currentPage = i;
+					fetchOrders();  // Gọi lại hàm fetchOrders để hiển thị dữ liệu trang mới
+				});
+				paginationContainer.appendChild(pageButton);
+			}
+		}
+
+		// Gọi hàm fetchOrders khi trang được tải
+		window.onload = () => {
+			fetchOrders(); // Tự động gọi hàm fetchOrders khi trang được tải
+		};
+
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
-	<script>
-		// Hàm chuyển đổi dữ liệu thành dạng hiển thị thân thiện trên web
-	function formatDisplayedValue(column, value) {
-	  if (column === 'orders_created') {
-		const date = new Date(value);
-		return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
-	  } else if (column === 'orders_status') {
-		const statusMap = {
-		  finished: 'Đã giao',
-		  waiting_temp_canceled: 'Tạm huỷ',
-		  internal_transport: 'Chuyển kho',
-		  delivery: 'Đang giao',
-		  wod_confirmed: 'Nhập kho giao',
-		  temp_cancelled: 'Tạm huỷ',
-		  lp_confirmed: 'Đã xác nhận',
-		  new: 'Mới (Đã đóng gói)',
-		  cancelled: 'Đã bị huỷ'
-		};
-		return statusMap[value] || value;
-	  } else if (column === 'mode_of_payment') {
-		const paymentMap = {
-		  cash: 'COD',
-		  bank: 'Không thu hộ'
-		};
-		return paymentMap[value] || value;
-	  }
-	  return value;
-	}
+	<!---script>
+			// Responsive adjustments based on window size
+		window.addEventListener('resize', function() {
+			let width = window.innerWidth;
+			let height = window.innerHeight;
 
-	// Cập nhật các option trong dropdown giá trị khi cột được chọn
-	function updateFilterOptions() {
-	  const column = document.getElementById('columnSelect').value;
-	  const valueSelect = document.getElementById('valueSelect');
-	  valueSelect.innerHTML = '<option value="">-- Chọn giá trị --</option>';
-
-	  if (!column) return;
-
-	  const uniqueValues = [...new Set(cachedOrders.map(order => formatDisplayedValue(column, order[column])))];
-	  uniqueValues.forEach(displayedValue => {
-		const rawValue = cachedOrders.find(order => formatDisplayedValue(column, order[column]) === displayedValue)[column];
-		const option = document.createElement('option');
-		option.value = rawValue; // Dùng giá trị thô để lọc
-		option.textContent = displayedValue; // Hiển thị giá trị đã được format
-		valueSelect.appendChild(option);
-	  });
-	}
-
-	// Áp dụng bộ lọc với giá trị thô dựa trên lựa chọn người dùng
-	function applyFilter() {
-	  const column = document.getElementById('columnSelect').value;
-	  const rawValue = document.getElementById('valueSelect').value;
-
-	  if (!column || !rawValue) {
-		alert("Vui lòng chọn cả cột và giá trị để lọc.");
-		return;
-	  }
-
-	  let filteredOrders;
-	  if (column === 'orders_created') {
-		// So sánh ngày mà không tính đến giờ
-		const selectedDate = new Date(rawValue);
-		filteredOrders = cachedOrders.filter(order => {
-		  const orderDate = new Date(order[column]);
-		  return orderDate.getDate() === selectedDate.getDate() &&
-				 orderDate.getMonth() === selectedDate.getMonth() &&
-				 orderDate.getFullYear() === selectedDate.getFullYear();
+			// Adjustments for different screen widths
+			if (width < 600) {
+				// Mobile adjustments
+				document.body.style.fontSize = "14px"; 
+				document.getElementById("ordersTable").style.width = "100%";  
+			} else if (width < 1200) {
+				// Tablet adjustments
+				document.body.style.fontSize = "16px";
+				document.getElementById("ordersTable").style.width = "90%";
+			} else {
+				// Desktop adjustments
+				document.body.style.fontSize = "18px";
+				document.getElementById("ordersTable").style.width = "80%";
+			}
 		});
-	  } else {
-		// Lọc theo các cột khác
-		filteredOrders = cachedOrders.filter(order => order[column] === rawValue);
-	  }
 
-	  renderOrders(filteredOrders);
-	}
+// Hide or display specific columns based on screen width
+		window.addEventListener('resize', function() {
+			let width = window.innerWidth;
+			const noteColumn = document.querySelectorAll('th:nth-child(12), td:nth-child(12)');
 
-	// Gọi các hàm khi người dùng thay đổi lựa chọn hoặc áp dụng lọc
-	document.getElementById('columnSelect').addEventListener('change', updateFilterOptions);
-	document.getElementById('applyFilterBtn').addEventListener('click', applyFilter);
+			if (width < 768) {
+				// Hide the note column on smaller screens
+				noteColumn.forEach(cell => {
+					cell.style.display = 'none';
+				});
+			} else {
+				// Show the note column on larger screens
+				noteColumn.forEach(cell => {
+					cell.style.display = 'table-cell';
+				});
+			}
+		});
 
-	</script>
-  </body>
+		// Adjust table height based on screen height
+		window.addEventListener('resize', function() {
+			let height = window.innerHeight;
+			const table = document.getElementById('ordersTable');
+
+			if (height < 800) {
+				table.style.maxHeight = '400px';
+				table.style.overflowY = 'scroll';  // Bật thanh cuộn dọc nếu vượt quá chiều cao
+			} else {
+				table.style.maxHeight = '600px';  // Màn hình lớn hơn thì tăng chiều cao bảng
+				table.style.overflowY = 'auto';
+			}
+		});
+
+	</script> -->
+</body>
 </html>

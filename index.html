@@ -226,6 +226,33 @@
       <button id="searchBtn" type="button" onclick="fetchOrders()">Tra Cứu</button>
       <a href="viber://chat?number=%2B84915665422" target="_self" class="viber-button">Liên hệ kho qua Viber</a>
     </div>
+	<div id="filterContainer" style="margin-top: 20px; display: flex; align-items: center;">
+	  <!-- Dropdown chọn cột -->
+	  <label for="columnSelect">Chọn cột:</label>
+	  <select id="columnSelect" style="margin-left: 10px;">
+		<option value="">-- Chọn cột --</option>
+		<option value="orders_created">Ngày đơn hàng</option>
+		<option value="orders_status">Trạng thái</option>
+		<option value="orders_code">Mã đơn hàng</option>
+		<option value="private_code">Đơn đặt hàng</option>
+		<option value="orders_customer_name">Khách hàng</option>
+		<option value="mode_of_payment">Thanh toán</option>
+	  </select>
+
+	  <!-- Dropdown chọn giá trị nếu không phải cột ngày -->
+	  <label for="valueSelect" style="margin-left: 20px;" id="valueLabel">Chọn giá trị lọc:</label>
+	  <select id="valueSelect" style="margin-left: 10px;">
+		<option value="">-- Chọn giá trị --</option>
+	  </select>
+
+	  <!-- Bảng lịch chọn ngày -->
+	  <label for="datePicker" style="margin-left: 20px; display: none;" id="dateLabel">Chọn ngày:</label>
+	  <input id="datePicker" type="text" style="margin-left: 10px; display: none;">
+
+	  <button id="applyFilterBtn" type="button" style="margin-left: 20px;">Áp dụng lọc</button>
+	</div>
+
+
     <button id="exportBtn" type="button" onclick="exportSelectedOrders()">Xuất Dữ Liệu</button>
     <table id="ordersTable">
       <thead>
@@ -249,10 +276,6 @@
     </table>
     <div id="pagination" style="text-align:center; margin-top:20px;"></div>
     <script>
-      document.getElementById('exportBtn').addEventListener('click', function(event) {
-        event.preventDefault();
-        exportSelectedOrders()
-      });
       let isFirstLoad = true;
       let cachedOrders = [];
       async function fetchOrders() {
@@ -353,58 +376,142 @@
       }
 
       function renderPagination(totalItems) {
-        const paginationContainer = document.getElementById('pagination');
-        paginationContainer.innerHTML = '';
-        const totalPages = Math.ceil(totalItems / itemsPerPage);
-        for (let i = 1; i <= totalPages; i++) {
-          const pageButton = document.createElement('button');
-          pageButton.textContent = i;
-          pageButton.className = 'page-btn';
-          if (i === currentPage) {
-            pageButton.classList.add('active')
-          }
-          pageButton.addEventListener('click', () => {
-            currentPage = i;
-            renderOrders(cachedOrders)
-          });
-          paginationContainer.appendChild(pageButton)
-        }
-      }
-      window.onload = fetchOrders;
-      document.getElementById('searchBtn').addEventListener('click', () => {
-        cachedOrders = [];
-        fetchOrders()
-      });
+			const paginationContainer = document.getElementById('pagination');
+			paginationContainer.innerHTML = '';
+			const totalPages = Math.ceil(totalItems / itemsPerPage);
+			for (let i = 1; i <= totalPages; i++) {
+			  const pageButton = document.createElement('button');
+			  pageButton.textContent = i;
+			  pageButton.className = 'page-btn';
+			  if (i === currentPage) {
+				pageButton.classList.add('active')
+			  }
+			  pageButton.addEventListener('click', () => {
+				currentPage = i;
+				renderOrders(cachedOrders)
+			  });
+			  paginationContainer.appendChild(pageButton)
+			}
+		  }
+		  window.onload = fetchOrders;
+		  document.getElementById('searchBtn').addEventListener('click', () => {
+			cachedOrders = [];
+			fetchOrders()
+		  });
 
-      function exportSelectedOrders() {
-        const checkboxes = document.querySelectorAll('.order-checkbox');
-        const selectedOrders = [];
-        checkboxes.forEach((checkbox) => {
-          if (checkbox.checked) {
-            const row = checkbox.closest('tr');
-            const cells = Array.from(row.querySelectorAll('td')).slice(1);
-            const orderData = cells.map(cell => cell.innerText);
-            selectedOrders.push(orderData)
-          }
-        });
-        if (selectedOrders.length === 0) {
-          showNotification("Chưa có đơn hàng được chọn", "error");
-          return
-        }
-        const wb = XLSX.utils.book_new();
-        const wsData = [
-          ["Ngày đơn hàng", "Lịch giao hàng", "Trạng thái", "Mã đơn hàng", "Đơn đặt hàng", "Khách hàng", "Địa chỉ giao", "Thanh toán", "Giá trị đơn", "Phí giao hàng", "Thời gian giao", "Ghi chú"], ...selectedOrders
-        ];
-        const ws = XLSX.utils.aoa_to_sheet(wsData);
-        XLSX.utils.book_append_sheet(wb, ws, "Orders");
-        ws['!cols'] = wsData[0].map(() => ({
-          wch: 20
-        }));
-        const today = new Date();
-        const fileName = `LP_Data_${today.getDate()}_${today.getMonth()+1}.xlsx`;
-        XLSX.writeFile(wb, fileName);
-        showNotification("Đã xuất thành công", "success")
-      }
+		function exportSelectedOrders() {
+		  const checkboxes = document.querySelectorAll('.order-checkbox');
+		  const selectedOrders = [];
+
+		  checkboxes.forEach((checkbox) => {
+			if (checkbox.checked) {
+			  const row = checkbox.closest('tr');
+			  const cells = Array.from(row.querySelectorAll('td')).slice(1);
+			  const orderData = cells.map(cell => cell.innerText);
+			  selectedOrders.push(orderData);
+			}
+		  });
+
+		  // Nếu không có đơn hàng nào được chọn, chuyển đổi dữ liệu thô thành dữ liệu tinh chỉnh
+		  const exportData = selectedOrders.length > 0 ? selectedOrders : cachedOrders.map(order => [
+			// Chuyển đổi ngày thành định dạng dễ đọc
+			new Date(order.orders_created).toLocaleDateString('vi-VN'),
+
+			// Lịch giao hàng
+			order.orders_delivery_schedule__expand.delivery_schedule_name || '',
+
+			// Chuyển đổi mã trạng thái thành tên trạng thái dễ hiểu
+			{
+			  finished: 'Đã giao',
+			  waiting_temp_canceled: 'Tạm huỷ',
+			  internal_transport: 'Chuyển kho',
+			  delivery: 'Đang giao',
+			  wod_confirmed: 'Nhập kho giao',
+			  temp_cancelled: 'Tạm huỷ',
+			  lp_confirmed: 'Đã xác nhận',
+			  new: 'Mới (Đã đóng gói)',
+			  cancelled: 'Đã bị huỷ'
+			}[order.orders_status] || order.orders_status,
+
+			// Mã đơn hàng
+			order.orders_code,
+
+			// Đơn đặt hàng
+			order.private_code,
+
+			// Tên khách hàng
+			order.orders_customer_name,
+
+			// Địa chỉ giao hàng
+			order.orders_pod_name,
+
+			// Phương thức thanh toán (COD hoặc Không thu hộ)
+			order.mode_of_payment === 'cash' ? 'COD' : 'Không thu hộ',
+
+			// Giá trị đơn hàng, định dạng tiền tệ
+			order.orders_amount ? order.orders_amount.toLocaleString('vi-VN') : 0,
+
+			// Phí giao hàng, định dạng tiền tệ
+			order.orders_fee_aft_vat ? order.orders_fee_aft_vat.toLocaleString('vi-VN') : 0,
+
+			// Thời gian giao thực tế, định dạng ngày giờ
+			order.time_delivery_reality ? new Date(order.time_delivery_reality).toLocaleString('vi-VN') : '',
+
+			// Ghi chú, nếu có
+			order.orders_temp_cancel_note || ''
+		  ]);
+
+		  // Tạo workbook và worksheet
+		  const wb = XLSX.utils.book_new();
+		  const wsData = [
+			["Ngày đơn hàng", "Lịch giao hàng", "Trạng thái", "Mã đơn hàng", "Đơn đặt hàng", "Khách hàng", "Địa chỉ giao", "Thanh toán", "Giá trị đơn", "Phí giao hàng", "Thời gian giao", "Ghi chú"], 
+			...exportData
+		  ];
+		  const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+		  // Tùy chỉnh cột tự động, font chữ, in đậm header và bo viền
+		  wsData.forEach((row, rowIndex) => {
+			row.forEach((_, colIndex) => {
+			  const cellAddress = XLSX.utils.encode_cell({ r: rowIndex, c: colIndex });
+			  if (!ws[cellAddress]) return;
+
+			  ws[cellAddress].s = {
+				font: {
+				  name: "Times New Roman",
+				  sz: 12,
+				  bold: rowIndex === 0
+				},
+				alignment: {
+				  vertical: "center",
+				  horizontal: "center",
+				  wrapText: true
+				},
+				border: {
+				  top: { style: "thin" },
+				  bottom: { style: "thin" },
+				  left: { style: "thin" },
+				  right: { style: "thin" }
+				}
+			  };
+			});
+		  });
+
+		  // Tự động điều chỉnh độ rộng cột
+		  ws['!cols'] = wsData[0].map(() => ({ wch: 20 }));
+
+		  XLSX.utils.book_append_sheet(wb, ws, "Orders");
+
+		  const today = new Date();
+		  const fileName = `LP_Data_${today.getDate()}_${today.getMonth() + 1}.xlsx`;
+		  XLSX.writeFile(wb, fileName);
+		  
+		  showNotification("Đã xuất thành công", "success");
+		}
+
+
+
+
+
 
       function showNotification(message, type) {
         const notification = document.getElementById('notification');
@@ -420,5 +527,85 @@
       }
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+	<script>
+		// Hàm chuyển đổi dữ liệu thành dạng hiển thị thân thiện trên web
+	function formatDisplayedValue(column, value) {
+	  if (column === 'orders_created') {
+		const date = new Date(value);
+		return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+	  } else if (column === 'orders_status') {
+		const statusMap = {
+		  finished: 'Đã giao',
+		  waiting_temp_canceled: 'Tạm huỷ',
+		  internal_transport: 'Chuyển kho',
+		  delivery: 'Đang giao',
+		  wod_confirmed: 'Nhập kho giao',
+		  temp_cancelled: 'Tạm huỷ',
+		  lp_confirmed: 'Đã xác nhận',
+		  new: 'Mới (Đã đóng gói)',
+		  cancelled: 'Đã bị huỷ'
+		};
+		return statusMap[value] || value;
+	  } else if (column === 'mode_of_payment') {
+		const paymentMap = {
+		  cash: 'COD',
+		  bank: 'Không thu hộ'
+		};
+		return paymentMap[value] || value;
+	  }
+	  return value;
+	}
+
+	// Cập nhật các option trong dropdown giá trị khi cột được chọn
+	function updateFilterOptions() {
+	  const column = document.getElementById('columnSelect').value;
+	  const valueSelect = document.getElementById('valueSelect');
+	  valueSelect.innerHTML = '<option value="">-- Chọn giá trị --</option>';
+
+	  if (!column) return;
+
+	  const uniqueValues = [...new Set(cachedOrders.map(order => formatDisplayedValue(column, order[column])))];
+	  uniqueValues.forEach(displayedValue => {
+		const rawValue = cachedOrders.find(order => formatDisplayedValue(column, order[column]) === displayedValue)[column];
+		const option = document.createElement('option');
+		option.value = rawValue; // Dùng giá trị thô để lọc
+		option.textContent = displayedValue; // Hiển thị giá trị đã được format
+		valueSelect.appendChild(option);
+	  });
+	}
+
+	// Áp dụng bộ lọc với giá trị thô dựa trên lựa chọn người dùng
+	function applyFilter() {
+	  const column = document.getElementById('columnSelect').value;
+	  const rawValue = document.getElementById('valueSelect').value;
+
+	  if (!column || !rawValue) {
+		alert("Vui lòng chọn cả cột và giá trị để lọc.");
+		return;
+	  }
+
+	  let filteredOrders;
+	  if (column === 'orders_created') {
+		// So sánh ngày mà không tính đến giờ
+		const selectedDate = new Date(rawValue);
+		filteredOrders = cachedOrders.filter(order => {
+		  const orderDate = new Date(order[column]);
+		  return orderDate.getDate() === selectedDate.getDate() &&
+				 orderDate.getMonth() === selectedDate.getMonth() &&
+				 orderDate.getFullYear() === selectedDate.getFullYear();
+		});
+	  } else {
+		// Lọc theo các cột khác
+		filteredOrders = cachedOrders.filter(order => order[column] === rawValue);
+	  }
+
+	  renderOrders(filteredOrders);
+	}
+
+	// Gọi các hàm khi người dùng thay đổi lựa chọn hoặc áp dụng lọc
+	document.getElementById('columnSelect').addEventListener('change', updateFilterOptions);
+	document.getElementById('applyFilterBtn').addEventListener('click', applyFilter);
+
+	</script>
   </body>
 </html>

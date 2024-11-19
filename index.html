@@ -375,24 +375,100 @@
         renderPagination(orders.length)
       }
 
-      function renderPagination(totalItems) {
-			const paginationContainer = document.getElementById('pagination');
-			paginationContainer.innerHTML = '';
-			const totalPages = Math.ceil(totalItems / itemsPerPage);
-			for (let i = 1; i <= totalPages; i++) {
-			  const pageButton = document.createElement('button');
-			  pageButton.textContent = i;
-			  pageButton.className = 'page-btn';
-			  if (i === currentPage) {
-				pageButton.classList.add('active')
-			  }
-			  pageButton.addEventListener('click', () => {
-				currentPage = i;
-				renderOrders(cachedOrders)
-			  });
-			  paginationContainer.appendChild(pageButton)
-			}
+		function renderPagination(totalItems) {
+		  const paginationContainer = document.getElementById('pagination');
+		  paginationContainer.innerHTML = '';
+		  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+		  if (totalPages <= 1) return;
+
+		  const createButton = (text, className, onClick, disabled = false) => {
+			const button = document.createElement('button');
+			button.textContent = text;
+			button.className = className;
+			button.disabled = disabled;
+			button.addEventListener('click', () => {
+			  onClick();
+			  window.scrollTo({ top: 0, behavior: 'smooth' }); // Cuộn lên đầu trang
+			});
+			return button;
+		  };
+
+		  // Hiển thị nút "Trang đầu" và "Trước" nếu không ở trang 1
+		  if (currentPage > 1) {
+			paginationContainer.appendChild(
+			  createButton('Trang đầu', 'page-btn', () => {
+				currentPage = 1;
+				renderOrders(cachedOrders);
+			  })
+			);
+			paginationContainer.appendChild(
+			  createButton('Trước', 'page-btn', () => {
+				currentPage -= 1;
+				renderOrders(cachedOrders);
+			  })
+			);
 		  }
+
+		  const visiblePages = 2; // Số lượng trang xung quanh trang hiện tại
+		  const startPage = Math.max(2, currentPage - visiblePages); // Trang bắt đầu (tránh lặp lại 1)
+		  const endPage = Math.min(totalPages - 1, currentPage + visiblePages); // Trang kết thúc (tránh lặp lại trang cuối)
+
+		  // Hiển thị trang "1" nếu cần, và tránh lặp lại với nút "Trang đầu"
+		  if (currentPage > visiblePages + 1) {
+			paginationContainer.appendChild(
+			  createButton('1', `page-btn ${currentPage === 1 ? 'active' : ''}`, () => {
+				currentPage = 1;
+				renderOrders(cachedOrders);
+			  })
+			);
+			if (startPage > 2) paginationContainer.appendChild(createButton('...', 'page-btn disabled', () => {}, true));
+		  }
+
+		  // Hiển thị các trang từ `startPage` đến `endPage`
+		  for (let i = startPage; i <= endPage; i++) {
+			paginationContainer.appendChild(
+			  createButton(
+				i.toString(),
+				`page-btn ${i === currentPage ? 'active' : ''}`,
+				() => {
+				  currentPage = i;
+				  renderOrders(cachedOrders);
+				}
+			  )
+			);
+		  }
+
+		  // Hiển thị trang cuối nếu cần, và tránh lặp lại với nút "Trang cuối"
+		  if (currentPage < totalPages - visiblePages) {
+			if (endPage < totalPages - 1) paginationContainer.appendChild(createButton('...', 'page-btn disabled', () => {}, true));
+			paginationContainer.appendChild(
+			  createButton(totalPages.toString(), `page-btn ${currentPage === totalPages ? 'active' : ''}`, () => {
+				currentPage = totalPages;
+				renderOrders(cachedOrders);
+			  })
+			);
+		  }
+
+		  // Hiển thị nút "Tiếp" và "Trang cuối" nếu không ở trang cuối
+		  if (currentPage < totalPages) {
+			paginationContainer.appendChild(
+			  createButton('Tiếp', 'page-btn', () => {
+				currentPage += 1;
+				renderOrders(cachedOrders);
+			  })
+			);
+			paginationContainer.appendChild(
+			  createButton('Trang cuối', 'page-btn', () => {
+				currentPage = totalPages;
+				renderOrders(cachedOrders);
+			  })
+			);
+		  }
+		}
+
+
+
 		  window.onload = fetchOrders;
 		  document.getElementById('searchBtn').addEventListener('click', () => {
 			cachedOrders = [];

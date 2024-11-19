@@ -346,7 +346,7 @@
 							<input type="checkbox" class="order-checkbox">
 							</td>
 							<td>${createdDate}</td>
-							<td>${order.orders_delivery_schedule__expand.delivery_schedule_name}</td>
+							<td>${order.orders_delivery_schedule__expand?.delivery_schedule_name || ''}</td>
 							<td class="centered">${status}</td>
 							<td class="long-text">${order.orders_code}</td>
 							<td class="long-text">${order.private_code}</td>

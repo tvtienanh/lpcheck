@@ -4,254 +4,684 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tra Cứu Đơn Hàng</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
       body {
-        font-family: Arial, sans-serif;
+        font-family: 'Roboto', sans-serif;
         margin: 0;
-        padding: 20px
+        padding: 0;
+        background-color: #f5f5f5;
+      }
+
+      /* Header styles */
+      .header {
+        display: flex;
+        align-items: center;
+        padding: 10px 40px;
+        background-color: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        position: fixed;
+        width: 100%;
+        height: 60px;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        box-sizing: border-box;
+      }
+
+      .logo {
+        height: 40px;
+        width: auto;
+      }
+
+      .nav {
+        margin-left: 30px;
+        display: flex;
+        gap: 20px;
+        align-items: center;
+      }
+
+      .nav-item {
+        position: relative;
+        padding: 10px 15px;
+        color: #333;
+        text-decoration: none;
+        font-weight: 500;
+        line-height: 40px;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+      }
+
+      .nav-item:hover {
+        background-color: #f5f5f5;
+      }
+
+      .dropdown {
+        position: relative;
+        display: inline-block;
+      }
+
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: white;
+        min-width: 200px;
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        z-index: 1;
+        border-radius: 4px;
+        top: calc(100% + 5px);
+        left: 0;
+        border-top: 3px solid #275284;
+      }
+
+      .dropdown:hover .dropdown-content {
+        display: block;
+      }
+
+      .dropdown-content a {
+        color: #333;
+        padding: 10px 15px;
+        text-decoration: none;
+        display: block;
+        border-bottom: 1px solid #eee;
+        line-height: 1.5;
+      }
+
+      .dropdown-content a:last-child {
+        border-bottom: none;
+      }
+
+      .dropdown-content a:hover {
+        background-color: #275284;
+        color: white;
+      }
+
+      /* Main content */
+      .container {
+        width: 95%;
+        max-width: 1600px;
+        margin: 80px auto 0;
+        padding: 20px;
       }
 
       h1 {
+        color: #275284;
+        margin: 20px 0 30px;
         text-align: center;
-        color: #3E8E41
+        font-weight: 500;
       }
 
       .search-container {
         display: flex;
-        justify-content: center;
-        margin-bottom: 20px
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      }
+
+      .search-box {
+        display: flex;
+        gap: 10px;
+        flex: 1;
+        max-width: 600px;
       }
 
       input[type="text"] {
-        padding: 10px;
-        border: 2px solid #3E8E41;
-        border-radius: 5px;
-        font-size: 16px;
-        width: 300px
+        padding: 12px 15px;
+        width: 100%;
+        border: 2px solid #e1e5eb;
+        border-radius: 8px;
+        font-size: 15px;
+        transition: all 0.3s;
       }
 
       button {
-        padding: 10px 15px;
-        margin-left: 10px;
-        background-color: #3E8E41;
+        padding: 12px 20px;
+        background-color: #275284;
         color: white;
         border: none;
-        border-radius: 5px;
-        font-size: 16px;
-        cursor: pointer
+        border-radius: 8px;
+        font-size: 15px;
+        cursor: pointer;
+        transition: all 0.3s;
       }
 
       button:hover {
-        background-color: #2B6A30
+        background-color: #1a3a5f;
       }
 
+      .viber-button {
+        background-color: #665CAC;
+        text-decoration: none;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 15px;
+        transition: all 0.3s;
+      }
+
+      /* Table styles */
       table {
         width: 100%;
         border-collapse: collapse;
         margin-top: 20px;
-        border: 2px solid #000
+        background: white;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        table-layout: fixed;
       }
 
-      th,
-      td {
-        border: 1px solid #000;
-        padding: 8px;
+      th, td {
+        padding: 8px 10px;
         text-align: left;
+        border: 1px solid #e1e5eb;
         font-size: 14px;
-        height: 40px
+        line-height: 1.5;
+        vertical-align: middle;
       }
 
       th {
-        background-color: #A3D9E0;
-        text-align: center
-      }
-
-      .status-finished {
-        color: #FFFFFF;
-        background-color: #4CAF50;
-        border-radius: 25px;
-        padding: 5px 9px
-      }
-
-      .status-waiting,
-      .status-cancelled,
-      .status-be-cancelled {
-        color: #FFFFFF;
-        background-color: #F44336;
-        border-radius: 25px;
-        padding: 5px 9px
-      }
-
-      .status-internal {
-        color: #FFFFFF;
-        background-color: #9C27B0;
-        border-radius: 25px;
-        padding: 5px 9px
-      }
-
-      .status-delivery {
-        color: #FFFFFF;
-        background-color: #2196F3;
-        border-radius: 25px;
-        padding: 5px 9px
-      }
-
-      .status-confirmed {
-        color: #FFFFFF;
-        background-color: #ffc266;
-        border-radius: 25px;
-        padding: 5px 9px
-      }
-
-      .status-new {
-        color: #FFFFFF;
-        background-color: #1ac6ff;
-        border-radius: 25px;
-        padding: 5px 9px
-      }
-
-      .status-wod {
-        color: #FFFFFF;
-        background-color: #9126f0;
-        border-radius: 25px;
-        padding: 5px 9px
-      }
-
-      .hidden {
-        display: none
-      }
-
-      .long-text {
-        max-width: 150px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap
-      }
-
-      .status-column {
-        width: 100px;
-        min-width: 130px;
-        max-width: 150px;
-        text-align: center
-      }
-
-      .viber-button {
-        margin-left: 20px;
-        display: inline-block;
-        padding: 10px 20px;
-        background-color: #59267C;
+        background-color: #275284;
         color: white;
-        text-decoration: none;
-        border-radius: 5px;
-        font-size: 16px;
-        font-weight: bold
+        font-weight: 500;
       }
 
-      .viber-button:hover {
-        background-color: #7D3BB7
+      tr:hover {
+        background-color: #f8f9fa;
       }
 
-      .amount,
-      .payment,
-      .shipping-fee {
-        text-align: center
-      }
-
-      .page-btn {
-        padding: 10px;
-        margin: 0 5px;
-        background-color: #3E8E41;
-        color: white;
-        border: none;
-        cursor: pointer;
-        border-radius: 5px
-      }
-
-      .page-btn.active {
-        background-color: #2B6A30
-      }
-
-      .page-btn:hover {
-        background-color: #2B6A30
-      }
-
-      .notification {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background-color: #333;
-        color: #fff;
-        padding: 10px 20px;
-        border-radius: 5px;
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
-        z-index: 1000;
+      /* Footer styles */
+      .footer {
+        text-align: center;
+        padding: 20px;
+        margin-top: 30px;
+        border-top: 1px solid #ddd;
+        color: #666;
         font-size: 14px;
-        opacity: 0.9;
+        font-weight: 300;
+      }
+
+      .footer a {
+        color: #275284;
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .footer a:hover {
+        text-decoration: underline;
+      }
+
+      /* Adjust container margin for fixed header */
+      .container {
+        margin-top: 90px;
+      }
+
+      /* Responsive header */
+      @media screen and (max-width: 768px) {
+        .header {
+          flex-direction: column;
+          align-items: flex-start;
+          height: auto;
+          position: relative;
+        }
+
+        .nav {
+          margin-left: 0;
+          margin-top: 10px;
+          flex-direction: column;
+          width: 100%;
+          height: auto;
+        }
+
+        .nav-item {
+          width: 100%;
+          padding: 15px;
+          border-bottom: 1px solid #eee;
+        }
+
+        .dropdown-content {
+          position: static;
+          box-shadow: none;
+          margin-left: 20px;
+          border-top: none;
+        }
+
+        .container {
+          margin-top: 20px;
+        }
+      }
+
+      /* Responsive */
+      @media screen and (max-width: 768px) {
+        .header {
+          position: relative;
+          height: auto;
+          padding: 10px;
+        }
+
+        .container {
+          width: 100%;
+          margin-top: 0;
+          padding: 10px;
+        }
+
+        .search-container {
+          flex-direction: column;
+        }
+
+        .search-box {
+          max-width: 100%;
+        }
+
+        table {
+          display: block;
+          overflow-x: auto;
+        }
+
+        th, td {
+          min-width: 120px;
+        }
+      }
+
+      /* Pagination styles */
+      .pagination {
         display: flex;
+        justify-content: center;
         align-items: center;
-        opacity: 0;
-        transition: opacity 0.5s ease-in-out
+        gap: 8px;
+        margin-top: 20px;
+        flex-wrap: wrap;
       }
 
-      .notification.visible {
-        opacity: 1;
-        transition: opacity 0.5s ease-in-out
+      .pagination button {
+        padding: 8px 16px;
+        border: 1px solid #ddd;
+        background-color: white;
+        color: #275284;
+        cursor: pointer;
+        border-radius: 4px;
+        font-size: 14px;
+        min-width: 40px;
+        transition: all 0.3s ease;
       }
 
-      .notification.hidden {
-        display: none
+      .pagination button:hover {
+        background-color: #f5f5f5;
+        border-color: #275284;
+      }
+
+      .pagination button.active {
+        background-color: #275284;
+        color: white;
+        border-color: #275284;
+      }
+
+      .pagination button:disabled {
+        background-color: #f5f5f5;
+        color: #999;
+        cursor: not-allowed;
+        border-color: #ddd;
+      }
+
+      /* Điều chỉnh lại style cho các buttons khác */
+      .search-button, .filter-button, .export-button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+
+      .search-button {
+        background-color: #275284;
+        color: white;
+      }
+
+      .filter-button {
+        background-color: #4CAF50;
+        color: white;
+      }
+
+      .export-button {
+        background-color: #f0ad4e;
+        color: white;
+      }
+
+      .button-icon {
+        margin-right: 8px;
+      }
+
+      /* Điều chỉnh độ rộng cho từng cột */
+      .checker-column { width: 40px; }
+      .date-column { width: 80px; }
+      .schedule-column { width: 80px; }
+      .status-column { 
+          width: 100px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+      }
+      .order-code-column { width: 130px; }
+      .private-code-column { width: 120px; }
+      .customer-column { width: 200px; }
+      .address-column { width: 250px; }
+      .payment-column { width: 100px; }
+      .amount-column { width: 100px; }
+      .shipping-column { width: 100px; }
+      .delivery-time-column { width: 130px; }
+      .note-column { width: 120px; }
+
+      /* Style cho các ô trong bảng */
+      td {
+          height: 50px;
+          vertical-align: middle;
+      }
+
+      /* Style cho các cột cần căn giữa */
+      .amount-column, .shipping-column, .delivery-time-column {
+          text-align: center;
+      }
+
+      /* Style cho cột ghi chú */
+      .note-column {
+          text-align: left;
+          vertical-align: middle;
+          white-space: normal;
+          word-break: break-word;
+      }
+
+      /* Style cho status badges */
+      .status-finished, .status-waiting, .status-internal,
+      .status-delivery, .status-wod, .status-cancelled,
+      .status-confirmed, .status-new, .status-be-cancelled {
+          padding: 4px 8px;
+          border-radius: 12px;
+          font-size: 13px;
+          font-weight: 500;
+          display: inline-block;
+          text-align: center;
+          min-width: 80px;
+          max-width: 90px;
+          color: white;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      }
+
+      /* Màu cho từng trạng thái */
+      .status-finished { background-color: #4CAF50; } /* Đã giao - Màu xanh lá */
+      .status-waiting { background-color: #F44336; } /* Tạm huỷ - Màu đỏ */
+      .status-internal { background-color: #9C27B0; } /* Chuyển kho - Màu tím */
+      .status-delivery { background-color: #2196F3; } /* Đang giao - Màu xanh dương */
+      .status-wod { background-color: #9126f0; } /* Nhập kho giao - Màu tím nhạt */
+      .status-cancelled { background-color: #F44336; } /* Tạm huỷ - Màu đỏ */
+      .status-confirmed { background-color: #ffc266; } /* Đã xác nhận - Màu cam */
+      .status-new { background-color: #1ac6ff; } /* Mới - Màu xanh nhạt */
+      .status-be-cancelled { background-color: #F44336; } /* Đã bị huỷ - Màu đỏ */
+
+      /* Các cột cần căn giữa */
+      .status-column, .payment-column, .amount-column, 
+      .shipping-column, .delivery-time-column {
+          text-align: center;
+      }
+
+      /* Đảm bảo status badge không bị tràn */
+      td.status-column span {
+          width: 100%;
+          box-sizing: border-box;
+      }
+
+      /* Điều chỉnh style cho các cột có nội dung dài */
+      .customer-column, .address-column {
+          white-space: normal;
+          word-break: break-word;
+          line-height: 1.4;
+      }
+
+      /* Đảm bảo tất cả các ô đều có padding đồng nhất */
+      th, td {
+          padding: 8px 10px;
+          text-align: left;
+          border: 1px solid #e1e5eb;
+          font-size: 14px;
+          line-height: 1.5;
+          vertical-align: middle;
+      }
+
+      /* Responsive table */
+      @media screen and (max-width: 1600px) {
+        table {
+          display: block;
+          overflow-x: auto;
+          white-space: nowrap;
+        }
+        
+        th, td {
+          min-width: unset;
+        }
+
+        /* Giữ nguyên độ rộng cột khi scroll */
+        .private-code-column, .address-column {
+          min-width: 120px;
+          max-width: 120px;
+        }
+      }
+
+      /* Thêm style cho loading overlay */
+      .loading-overlay {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(255, 255, 255, 0.9);
+          z-index: 9999;
+          justify-content: center;
+          align-items: center;
+          flex-direction: column;
+      }
+
+      .loading-spinner {
+          width: 50px;
+          height: 50px;
+          border: 5px solid #f3f3f3;
+          border-top: 5px solid #275284;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+      }
+
+      .loading-text {
+          margin-top: 15px;
+          color: #275284;
+          font-weight: 500;
+      }
+
+      /* Style cho notification */
+      .notification {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          padding: 15px 25px;
+          border-radius: 8px;
+          color: white;
+          font-weight: 500;
+          opacity: 0;
+          transform: translateY(-20px);
+          transition: all 0.3s ease;
+          z-index: 9999;
       }
 
       .notification.success {
-        background-color: #4CAF50
+          background-color: #4CAF50;
       }
 
       .notification.error {
-        background-color: #F44336
+          background-color: #f44336;
       }
 
-      input[type=checkbox] {
-        transform: scale(1.8);
-        margin-left: 21px
+      .notification.visible {
+          opacity: 1;
+          transform: translateY(0);
+      }
+
+      @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+      }
+
+      /* Responsive design cho các thiết bị */
+      @media screen and (max-width: 1600px) {
+          .container {
+              width: 98%;
+              margin: 70px auto 0;
+          }
+      }
+
+      @media screen and (max-width: 1200px) {
+          table {
+              display: block;
+              overflow-x: auto;
+              white-space: nowrap;
+          }
+          
+          .container {
+              padding: 10px;
+          }
+      }
+
+      /* Tablet */
+      @media screen and (max-width: 1024px) {
+          .header {
+              padding: 10px 20px;
+          }
+          
+          .search-container {
+              flex-direction: column;
+              gap: 10px;
+          }
+          
+          .search-box {
+              width: 100%;
+              max-width: none;
+          }
+          
+          button {
+              width: 100%;
+          }
+      }
+
+      /* Mobile */
+      @media screen and (max-width: 768px) {
+          .header {
+              position: relative;
+              height: auto;
+              padding: 10px;
+          }
+
+          .nav {
+              flex-direction: column;
+              margin-left: 0;
+              width: 100%;
+          }
+
+          .container {
+              margin-top: 20px;
+          }
+
+          h1 {
+              font-size: 24px;
+          }
+
+          .search-container {
+              padding: 15px;
+          }
+
+          input[type="text"] {
+              font-size: 14px;
+          }
+
+          button {
+              font-size: 14px;
+              padding: 10px 15px;
+          }
+
+          th, td {
+              padding: 6px 8px;
+              font-size: 13px;
+          }
       }
     </style>
   </head>
   <body>
+    <div class="header">
+      <img src="https://i.ibb.co/RDn390c/logo-final-01.png" alt="Logo" class="logo">
+      <nav class="nav">
+        <div class="dropdown">
+          <a href="#" class="nav-item">Tra cứu</a>
+          <div class="dropdown-content">
+            <a href="https://ymedgroup.github.io/lpcheck/">Tra cứu đơn Mekong</a>
+            <a href="https://ymedgroup.github.io/ymed/">Tra cứu đơn YMED</a>
+          </div>
+        </div>
+        <div class="dropdown">
+          <a href="#" class="nav-item">Tồn kho</a>
+          <div class="dropdown-content">
+            <a href="https://ymedgroup.github.io/tonkhosale/">Tồn kho HCM</a>
+            <a href="https://ymedgroup.github.io/warehousehn/">Tồn kho HN</a>
+            <a href="#" onclick="checkPassword(); return false;">Tồn kho toàn quốc</a>
+          </div>
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
     <h1>Tra Cứu Đơn Hàng</h1>
-    <div id="notification" class="notification hidden">
-      <span id="notificationMessage"></span>
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Đang tải dữ liệu...</div>
     </div>
+
+    <div id="notification" class="notification">
+        <span id="notificationMessage"></span>
+    </div>
+      
     <div class="search-container">
+        <div class="search-box">
       <input type="text" id="privateCode" placeholder="Nhập mã đơn hàng, tên khách hàng,... để tra cứu">
-      <button id="searchBtn" type="button" onclick="fetchOrders()">Tra Cứu</button>
-      <a href="viber://chat?number=%2B84915665422" target="_self" class="viber-button">Liên hệ kho qua Viber</a>
+          <button id="searchBtn" type="button" onclick="fetchOrders()">
+            <i class="fas fa-search"></i>
+            Tra Cứu
+          </button>
+        </div>
+        <a href="viber://chat?number=%2B84915665422" target="_self" class="viber-button">
+          <i class="fab fa-viber"></i>
+          Liên hệ kho qua Viber
+        </a>
     </div>
-	<div id="filterContainer" style="margin-top: 20px; display: flex; align-items: center;">
-	  <!-- Dropdown chọn cột -->
+
+      <div id="filterContainer">
 	  <label for="columnSelect">Chọn cột:</label>
-	  <select id="columnSelect" style="margin-left: 10px;">
+        <select id="columnSelect">
 		<option value="">-- Chọn cột --</option>
 		<option value="orders_created">Ngày đơn hàng</option>
 		<option value="orders_status">Trạng thái</option>
-		<!-- <option value="orders_code">Mã đơn hàng</option> -->
 		<option value="private_code">Đơn đặt hàng</option>
-		<!-- <option value="orders_customer_name">Khách hàng</option> -->
 		<option value="mode_of_payment">Thanh toán</option>
 	  </select>
-
-	  <!-- Dropdown chọn giá trị nếu không phải cột ngày -->
-	  <label for="valueSelect" style="margin-left: 20px;" id="valueLabel">Chọn giá trị lọc:</label>
-	  <select id="valueSelect" style="margin-left: 10px;">
+        <select id="valueSelect">
 		<option value="">-- Chọn giá trị --</option>
 	  </select>
-
-	  <!-- Bảng lịch chọn ngày -->
-	  <label for="datePicker" style="margin-left: 20px; display: none;" id="dateLabel">Chọn ngày:</label>
-	  <input id="datePicker" type="text" style="margin-left: 10px; display: none;">
-
-	  <button id="applyFilterBtn" type="button" style="margin-left: 20px;">Áp dụng lọc</button>
+        <button id="applyFilterBtn">Áp dụng lọc</button>
 	</div>
-
 
     <button id="exportBtn" type="button" onclick="exportSelectedOrders()">Xuất Dữ Liệu</button>
     <table id="ordersTable">
@@ -274,46 +704,79 @@
       </thead>
       <tbody id="ordersBody"></tbody>
     </table>
-    <div id="pagination" style="text-align:center; margin-top:20px;"></div>
+      <div class="pagination"></div>
+      <div class="footer">
+        <p>© 2024 Tra cứu tồn kho Cloudify</p>
+        <p>Được phát triển bởi <a href="">Trần Văn Tiến Anh</a> và Claude (AI)</p>
+      </div>
+    </div>
+
+    <!-- Add Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <script>
       let isFirstLoad = true;
       let cachedOrders = [];
-      async function fetchOrders() {
-        cachedOrders = [];
-        if (cachedOrders.length > 0) {
-          renderOrders(cachedOrders);
-          return
-        }
-        const privateCode = document.getElementById('privateCode').value;
-        let filterString = '';
-        if (privateCode) {
-          filterString = `(((contains(private_code,'${privateCode}')) or (contains(orders_cancel_reason,'${privateCode}')) or (contains(orders_code,'${privateCode}')) or (contains(orders_temp_cancel_full_reason,'${privateCode}')) or (contains(orders_temp_cancel_reason,'${privateCode}')) or (contains(pod_districts,'${privateCode}')) or (contains(orders_customer_name,'${privateCode}'))))`
-        }
-        const response = await fetch("https://giaoduocpham.vn/graphql", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer BAJ2DY4ZoepiEXmAd,7670d8f330af99fa7f34e9d2158e0b7a2d50dba546f10074fdf5aa41f5cf75ecf2e0295951522e20395bca"
-          },
-          body: JSON.stringify({
-            query: `{records: orders(skip: 0, top: 999, filters: "${filterString}") {_id,orders_code,private_code,orders_status,orders_amount,orders_fee_aft_vat,orders_pod_name,orders_customer_name,orders_created,mode_of_payment,time_delivery_reality,orders_delivery_schedule__expand {_id,delivery_schedule_name} orders_temp_cancel_note},count: orders__count}`
-          })
-        });
-        const data = await response.json();
-        cachedOrders = data.data.records;
-        renderOrders(cachedOrders);
-        isFirstLoad = false
-      }
+      let filteredOrders = null;
       let currentPage = 1;
       const itemsPerPage = 30;
+
+      async function fetchOrders() {
+        try {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            
+            const privateCode = document.getElementById('privateCode').value;
+            let filterString = '';
+            if (privateCode) {
+                filterString = `(((contains(private_code,'${privateCode}')) or (contains(orders_cancel_reason,'${privateCode}')) or (contains(orders_code,'${privateCode}')) or (contains(orders_temp_cancel_full_reason,'${privateCode}')) or (contains(orders_temp_cancel_reason,'${privateCode}')) or (contains(pod_districts,'${privateCode}')) or (contains(orders_customer_name,'${privateCode}'))))`
+            }
+
+            const response = await fetch("https://giaoduocpham.vn/graphql", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer BAJ2DY4ZoepiEXmAd,7670d8f330af99fa7f34e9d2158e0b7a2d50dba546f10074fdf5aa41f5cf75ecf2e0295951522e20395bca"
+                },
+                body: JSON.stringify({
+                    query: `{records: orders(skip: 0, top: 999, filters: "${filterString}") {_id,orders_code,private_code,orders_status,orders_amount,orders_fee_aft_vat,orders_pod_name,orders_customer_name,orders_created,mode_of_payment,time_delivery_reality,orders_delivery_schedule__expand {_id,delivery_schedule_name} orders_temp_cancel_note},count: orders__count}`
+                })
+            });
+
+            const data = await response.json();
+            
+            if (data.data.records.length === 0) {
+                showNotification('Không tìm thấy đơn hàng', 'error');
+            } else {
+                showNotification(`Đã tìm thấy ${data.data.records.length} đơn hàng`, 'success');
+            }
+
+            cachedOrders = data.data.records;
+            filteredOrders = null;
+            currentPage = 1;
+            renderOrders(cachedOrders);
+            isFirstLoad = false;
+
+        } catch (error) {
+            showNotification('Đã có lỗi xảy ra khi tải dữ liệu', 'error');
+            console.error('Error:', error);
+        } finally {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+      }
 
       function renderOrders(orders) {
         const ordersBody = document.getElementById('ordersBody');
         ordersBody.innerHTML = '';
+        
+        // Sắp xếp đơn hàng từ mới đến cũ
         orders.sort((a, b) => new Date(b.orders_created) - new Date(a.orders_created));
+        
+        // Tính toán phân trang
+        const totalPages = Math.ceil(orders.length / itemsPerPage);
         const startIndex = (currentPage - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, orders.length);
         const paginatedOrders = orders.slice(startIndex, endIndex);
+
+        // Hiển thị dữ liệu
         paginatedOrders.forEach(order => {
           const createdDate = new Date(order.orders_created).toLocaleDateString();
           const status = {
@@ -345,18 +808,18 @@
 						<td class="checker-cell">
 							<input type="checkbox" class="order-checkbox">
 							</td>
-							<td>${createdDate}</td>
-							<td>${order.orders_delivery_schedule__expand?.delivery_schedule_name || ''}</td>
-							<td class="centered">${status}</td>
-							<td class="long-text">${order.orders_code}</td>
-							<td class="long-text">${order.private_code}</td>
-							<td>${order.orders_customer_name}</td>
-							<td>${order.orders_pod_name}</td>
-							<td class="payment centered">${paymentMethod}</td>
-							<td class="amount centered">${order.orders_amount?order.orders_amount.toLocaleString('vi-VN'):0}</td>
-							<td class="shipping-fee centered">${order.orders_fee_aft_vat?order.orders_fee_aft_vat.toLocaleString('vi-VN'):0}</td>
-							<td>${order.time_delivery_reality?new Date(order.time_delivery_reality).toLocaleString():''}</td>
-							<td>${order.orders_temp_cancel_note||''}</td>`;
+							<td class="date-column">${createdDate}</td>
+							<td class="schedule-column" title="${order.orders_delivery_schedule__expand?.delivery_schedule_name || ''}">${order.orders_delivery_schedule__expand?.delivery_schedule_name || ''}</td>
+							<td class="status-column centered">${status}</td>
+							<td class="order-code-column" title="${order.orders_code}">${order.orders_code}</td>
+							<td class="private-code-column" title="${order.private_code}">${order.private_code}</td>
+							<td class="customer-column" title="${order.orders_customer_name}">${order.orders_customer_name}</td>
+							<td class="address-column" title="${order.orders_pod_name}">${order.orders_pod_name}</td>
+							<td class="payment-column centered">${paymentMethod}</td>
+							<td class="amount-column centered">${order.orders_amount?order.orders_amount.toLocaleString('vi-VN'):0}</td>
+							<td class="shipping-column centered">${order.orders_fee_aft_vat?order.orders_fee_aft_vat.toLocaleString('vi-VN'):0}</td>
+							<td class="delivery-time-column">${order.time_delivery_reality?new Date(order.time_delivery_reality).toLocaleString():''}</td>
+							<td class="note-column" title="${order.orders_temp_cancel_note||''}">${order.orders_temp_cancel_note||''}</td>`;
           ordersBody.appendChild(row)
         });
         const noteHeader = document.querySelector('th:nth-child(13)');
@@ -372,102 +835,69 @@
             row.cells[11].style.display = 'none'
           })
         }
-        renderPagination(orders.length)
+        renderPagination(orders.length, totalPages);
       }
 
-		function renderPagination(totalItems) {
-		  const paginationContainer = document.getElementById('pagination');
-		  paginationContainer.innerHTML = '';
-		  const totalPages = Math.ceil(totalItems / itemsPerPage);
+      function renderPagination(totalItems, totalPages) {
+        const pagination = document.querySelector('.pagination');
+        pagination.innerHTML = '';
 
 		  if (totalPages <= 1) return;
 
-		  const createButton = (text, className, onClick, disabled = false) => {
-			const button = document.createElement('button');
-			button.textContent = text;
-			button.className = className;
-			button.disabled = disabled;
-			button.addEventListener('click', () => {
-			  onClick();
-			  window.scrollTo({ top: 0, behavior: 'smooth' }); // Cuộn lên đầu trang
-			});
-			return button;
-		  };
-
-		  // Hiển thị nút "Trang đầu" và "Trước" nếu không ở trang 1
+        // Nút Trước
 		  if (currentPage > 1) {
-			paginationContainer.appendChild(
-			  createButton('Trang đầu', 'page-btn', () => {
-				currentPage = 1;
-				renderOrders(cachedOrders);
-			  })
-			);
-			paginationContainer.appendChild(
-			  createButton('Trước', 'page-btn', () => {
-				currentPage -= 1;
-				renderOrders(cachedOrders);
-			  })
-			);
-		  }
+            pagination.appendChild(createPageButton('Trước', currentPage - 1));
+        }
+        
+        // Các nút số trang
+        let startPage = Math.max(1, currentPage - 2);
+        let endPage = Math.min(totalPages, currentPage + 2);
+        
+        // Đảm bảo luôn hiển thị 5 nút số trang nếu có thể
+        if (endPage - startPage < 4) {
+            if (startPage === 1) {
+                endPage = Math.min(5, totalPages);
+            } else {
+                startPage = Math.max(1, totalPages - 4);
+            }
+        }
 
-		  const visiblePages = 2; // Số lượng trang xung quanh trang hiện tại
-		  const startPage = Math.max(2, currentPage - visiblePages); // Trang bắt đầu (tránh lặp lại 1)
-		  const endPage = Math.min(totalPages - 1, currentPage + visiblePages); // Trang kết thúc (tránh lặp lại trang cuối)
-
-		  // Hiển thị trang "1" nếu cần, và tránh lặp lại với nút "Trang đầu"
-		  if (currentPage > visiblePages + 1) {
-			paginationContainer.appendChild(
-			  createButton('1', `page-btn ${currentPage === 1 ? 'active' : ''}`, () => {
-				currentPage = 1;
-				renderOrders(cachedOrders);
-			  })
-			);
-			if (startPage > 2) paginationContainer.appendChild(createButton('...', 'page-btn disabled', () => {}, true));
-		  }
-
-		  // Hiển thị các trang từ `startPage` đến `endPage`
+        // Hiển thị các nút số trang
 		  for (let i = startPage; i <= endPage; i++) {
-			paginationContainer.appendChild(
-			  createButton(
-				i.toString(),
-				`page-btn ${i === currentPage ? 'active' : ''}`,
-				() => {
-				  currentPage = i;
-				  renderOrders(cachedOrders);
-				}
-			  )
-			);
-		  }
-
-		  // Hiển thị trang cuối nếu cần, và tránh lặp lại với nút "Trang cuối"
-		  if (currentPage < totalPages - visiblePages) {
-			if (endPage < totalPages - 1) paginationContainer.appendChild(createButton('...', 'page-btn disabled', () => {}, true));
-			paginationContainer.appendChild(
-			  createButton(totalPages.toString(), `page-btn ${currentPage === totalPages ? 'active' : ''}`, () => {
-				currentPage = totalPages;
-				renderOrders(cachedOrders);
-			  })
-			);
-		  }
-
-		  // Hiển thị nút "Tiếp" và "Trang cuối" nếu không ở trang cuối
+            const button = createPageButton(i, i);
+            if (i === currentPage) {
+                button.classList.add('active');
+            }
+            pagination.appendChild(button);
+        }
+        
+        // Nút Tiếp
 		  if (currentPage < totalPages) {
-			paginationContainer.appendChild(
-			  createButton('Tiếp', 'page-btn', () => {
-				currentPage += 1;
-				renderOrders(cachedOrders);
-			  })
-			);
-			paginationContainer.appendChild(
-			  createButton('Trang cuối', 'page-btn', () => {
-				currentPage = totalPages;
-				renderOrders(cachedOrders);
-			  })
-			);
-		  }
-		}
+            pagination.appendChild(createPageButton('Tiếp', currentPage + 1));
+        }
+    }
 
+    function createPageButton(text, page, disabled = false) {
+        const button = document.createElement('button');
+        button.textContent = text;
+        if (disabled) {
+            button.disabled = true;
+            return button;
+        }
+        button.addEventListener('click', () => {
+            if (page !== null) {
+                currentPage = page;
+                renderOrders(filteredOrders || cachedOrders);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
+        return button;
+    }
 
+    function goToPage(page) {
+        currentPage = page;
+        renderOrders(filteredOrders || cachedOrders);
+    }
 
 		  window.onload = fetchOrders;
 		  document.getElementById('searchBtn').addEventListener('click', () => {
@@ -584,27 +1014,17 @@
 		  showNotification("Đã xuất thành công", "success");
 		}
 
-
-
-
-
-
       function showNotification(message, type) {
         const notification = document.getElementById('notification');
         const notificationMessage = document.getElementById('notificationMessage');
-        notificationMessage.innerText = message;
+        notificationMessage.textContent = message;
         notification.className = `notification ${type} visible`;
+        
         setTimeout(() => {
-          notification.classList.remove('visible')
+            notification.classList.remove('visible');
         }, 3000);
-        setTimeout(() => {
-          notification.classList.add('hidden')
-        }, 3500)
       }
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
-	<script>
-		// Hàm chuyển đổi dữ liệu thành dạng hiển thị thân thiện trên web
+
 	function formatDisplayedValue(column, value) {
 	  if (column === 'orders_created') {
 		const date = new Date(value);
@@ -632,7 +1052,6 @@
 	  return value;
 	}
 
-	// Cập nhật các option trong dropdown giá trị khi cột được chọn
 	function updateFilterOptions() {
 	  const column = document.getElementById('columnSelect').value;
 	  const valueSelect = document.getElementById('valueSelect');
@@ -644,13 +1063,12 @@
 	  uniqueValues.forEach(displayedValue => {
 		const rawValue = cachedOrders.find(order => formatDisplayedValue(column, order[column]) === displayedValue)[column];
 		const option = document.createElement('option');
-		option.value = rawValue; // Dùng giá trị thô để lọc
-		option.textContent = displayedValue; // Hiển thị giá trị đã được format
+        option.value = rawValue;
+        option.textContent = displayedValue;
 		valueSelect.appendChild(option);
 	  });
 	}
 
-	// Áp dụng bộ lọc với giá trị thô dựa trên lựa chọn người dùng
 	function applyFilter() {
 	  const column = document.getElementById('columnSelect').value;
 	  const rawValue = document.getElementById('valueSelect').value;
@@ -660,28 +1078,39 @@
 		return;
 	  }
 
-	  let filteredOrders;
+      currentPage = 1;
+      
+      filteredOrders = cachedOrders.filter(order => {
 	  if (column === 'orders_created') {
-		// So sánh ngày mà không tính đến giờ
+          const orderDate = new Date(order[column]);
 		const selectedDate = new Date(rawValue);
-		filteredOrders = cachedOrders.filter(order => {
-		  const orderDate = new Date(order[column]);
-		  return orderDate.getDate() === selectedDate.getDate() &&
-				 orderDate.getMonth() === selectedDate.getMonth() &&
-				 orderDate.getFullYear() === selectedDate.getFullYear();
-		});
+          return orderDate.toDateString() === selectedDate.toDateString();
 	  } else {
-		// Lọc theo các cột khác
-		filteredOrders = cachedOrders.filter(order => order[column] === rawValue);
+          return order[column] === rawValue;
 	  }
+      });
 
 	  renderOrders(filteredOrders);
 	}
 
-	// Gọi các hàm khi người dùng thay đổi lựa chọn hoặc áp dụng lọc
+    function clearFilter() {
+      document.getElementById('columnSelect').value = '';
+      document.getElementById('valueSelect').innerHTML = '<option value="">-- Chọn giá trị --</option>';
+      filteredOrders = null;
+      currentPage = 1;
+      renderOrders(cachedOrders);
+    }
+
+    document.getElementById('filterContainer').innerHTML += `
+      <button onclick="clearFilter()" class="filter-button">
+        <i class="fas fa-times"></i>
+        Xóa bộ lọc
+      </button>
+    `;
+
 	document.getElementById('columnSelect').addEventListener('change', updateFilterOptions);
 	document.getElementById('applyFilterBtn').addEventListener('click', applyFilter);
-
 	</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
   </body>
 </html>

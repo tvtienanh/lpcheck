@@ -11,6 +11,15 @@
     <script src="https://kit.fontawesome.com/your-kit-code.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
     <style>
+      :root {
+        --primary-color: #CC232A; /* Fire Engine Red - màu chủ đạo */
+        --secondary-color: #F5AC27; /* Bright Yellow - màu phụ */
+        --accent-color: #FFD84B; /* Gargoyle Gas - màu nhấn */
+        --light-accent: #F2888B; /* Tulip - màu nhẹ */
+        --dark-primary: #A3262A; /* Auburn - màu đậm */
+        --gold-color: #CC9902; /* Chinese Gold - màu vàng */
+      }
+
       body {
         font-family: 'Roboto', sans-serif;
         margin: 0;
@@ -23,8 +32,8 @@
         display: flex;
         align-items: center;
         padding: 10px 40px;
-        background-color: white;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        background-color: var(--primary-color);
+        box-shadow: 0 2px 4px rgba(204, 35, 42, 0.2);
         position: fixed;
         width: 100%;
         height: 60px;
@@ -32,6 +41,16 @@
         left: 0;
         z-index: 1000;
         box-sizing: border-box;
+      }
+
+      .header::after {
+        content: '';
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(90deg, var(--gold-color), var(--accent-color), var(--gold-color));
       }
 
       .logo {
@@ -49,7 +68,7 @@
       .nav-item {
         position: relative;
         padding: 10px 15px;
-        color: #333;
+        color: white;
         text-decoration: none;
         font-weight: 500;
         line-height: 40px;
@@ -58,7 +77,7 @@
       }
 
       .nav-item:hover {
-        background-color: #f5f5f5;
+        background-color: var(--dark-primary);
       }
 
       .dropdown {
@@ -76,7 +95,7 @@
         border-radius: 4px;
         top: 100%;
         left: 0;
-        border-top: 3px solid #275284;
+        border-top: 3px solid var(--gold-color);
         opacity: 0;
         visibility: hidden;
         transition: all 0.3s ease;
@@ -103,7 +122,7 @@
       }
 
       .dropdown-content a:hover {
-        background-color: #275284;
+        background-color: var(--primary-color);
         color: white;
       }
 
@@ -135,7 +154,7 @@
       }
 
       h1 {
-        color: #275284;
+        color: var(--primary-color);
         margin: 20px 0 30px;
         text-align: center;
         font-weight: 700;
@@ -180,7 +199,7 @@
 
       button {
         padding: 12px 20px;
-        background-color: #275284;
+        background: linear-gradient(45deg, var(--primary-color), var(--dark-primary));
         color: white;
         border: none;
         border-radius: 8px;
@@ -190,7 +209,7 @@
       }
 
       button:hover {
-        background-color: #1a3a5f;
+        background: linear-gradient(45deg, var(--dark-primary), var(--primary-color));
       }
 
       .viber-button {
@@ -211,13 +230,14 @@
         width: 100%;
         border-collapse: collapse;
         margin-top: 20px;
-        background: white;
+        background-color: white;
         box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        table-layout: auto;
+        border-radius: 8px;
+        overflow: hidden;
       }
 
       th {
-        background-color: #275284;
+        background-color: var(--primary-color);
         color: white;
         font-weight: 500;
         padding: 12px 15px;
@@ -365,7 +385,7 @@
 
       /* Hover effect */
       tr:hover {
-        background-color: #f8f9fa;
+        background-color: rgba(245, 172, 39, 0.1);
       }
 
       /* Status tag styles */
@@ -412,14 +432,14 @@
 
       /* Màu cho từng trạng thái */
       .status-finished { background-color: #4CAF50; } /* Đã giao - Màu xanh lá */
-      .status-waiting { background-color: #F44336; } /* Tạm huỷ - Màu đỏ */
+      .status-waiting { background-color: var(--primary-color); } /* Tạm huỷ - Màu đỏ */
       .status-internal { background-color: #9C27B0; } /* Chuyển kho - Màu tím */
       .status-delivery { background-color: #2196F3; } /* Đang giao - Màu xanh dương */
       .status-wod { background-color: #9126f0; } /* Nhập kho giao - Màu tím nhạt */
-      .status-cancelled { background-color: #F44336; } /* Tạm huỷ - Màu đỏ */
-      .status-confirmed { background-color: #ffc266; } /* Đã xác nhận - Màu cam */
+      .status-cancelled { background-color: var(--primary-color); } /* Tạm huỷ - Màu đỏ */
+      .status-confirmed { background-color: var(--secondary-color); } /* Đã xác nhận - Màu cam */
       .status-new { background-color: #1ac6ff; } /* Mới - Màu xanh nhạt */
-      .status-be-cancelled { background-color: #F44336; } /* Đã bị huỷ - Màu đỏ */
+      .status-be-cancelled { background-color: var(--primary-color); } /* Đã bị huỷ - Màu đỏ */
 
       /* Các cột cần căn giữa */
       .status-column, .payment-column, .amount-column, 
@@ -773,7 +793,7 @@
         padding: 8px 16px;
         border: 1px solid #ddd;
         background-color: white;
-        color: #275284;
+        color: var(--primary-color);
         cursor: pointer;
         border-radius: 4px;
         font-size: 14px;
@@ -783,13 +803,13 @@
 
       .pagination button:hover {
         background-color: #f5f5f5;
-        border-color: #275284;
+        border-color: var(--primary-color);
       }
 
       .pagination button.active {
-        background-color: #275284;
+        background-color: var(--primary-color);
         color: white;
-        border-color: #275284;
+        border-color: var(--primary-color);
       }
 
       .pagination button:disabled {
@@ -802,12 +822,12 @@
       /* Style cho nút Tiếp */
       .pagination button.next {
         background-color: white;
-        color: #275284;
+        color: var(--primary-color);
       }
 
       .pagination button.next:hover {
         background-color: #f5f5f5;
-        border-color: #275284;
+        border-color: var(--primary-color);
       }
 
       /* Footer styles */
@@ -980,7 +1000,7 @@
       }
 
       .copy-btn:hover {
-        color: #1a3a5f;
+        color: var(--primary-color);
         background-color: #e9ecef;
       }
 
@@ -1285,11 +1305,47 @@
               border-radius: 0;
           }
       }
+
+      /* Style cho trang trí Tết */
+      .tet-decoration {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        width: 200px;
+        height: auto;
+        z-index: 9999;
+        animation: fadeInDown 1s ease-out, bounce 2s ease infinite 1s;
+        filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.2));
+      }
+
+      @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-15px);
+        }
+      }
+
+      @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translate3d(0, -100%, 0);
+        }
+        to {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+        }
+      }
     </style>
   </head>
   <body>
+    <img src="https://i.postimg.cc/tCPSfT4H/Pngtree-2025-year-of-the-snake-19133441.png" 
+         alt="Tết 2024" 
+         class="tet-decoration">
+
     <div class="header">
-      <img src="https://i.ibb.co/RDn390c/logo-final-01.png" alt="Logo" class="logo">
+      <img src="https://i.postimg.cc/KzrDZKw6/logo-final-02.png" alt="Logo" class="logo">
       <nav class="nav">
         <div class="dropdown">
           <a href="#" class="nav-item">Tra cứu</a>
@@ -1478,7 +1534,7 @@
                     "Authorization": "Bearer BAJ2DY4ZoepiEXmAd,7670d8f330af99fa7f34e9d2158e0b7a2d50dba546f10074fdf5aa41f5cf75ecf2e0295951522e20395bca"
                 },
                 body: JSON.stringify({
-                    query: `{records: orders(skip: 0, top: 999, filters: "${filterString}") {_id,orders_code,private_code,orders_status,orders_amount,orders_fee_aft_vat,orders_pod_name,orders_customer_name,orders_created,mode_of_payment,time_delivery_reality,orders_delivery_schedule__expand {_id,delivery_schedule_name} orders_temp_cancel_note},count: orders__count}`
+                    query: `{records: orders(skip: 0, top: 9999, filters: "${filterString}") {_id,orders_code,private_code,orders_status,orders_amount,orders_fee_aft_vat,orders_pod_name,orders_customer_name,orders_created,mode_of_payment,time_delivery_reality,orders_delivery_schedule__expand {_id,delivery_schedule_name} orders_temp_cancel_note},count: orders__count}`
                 })
             });
 
